@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if title %}
+        <title> Pickle - {{title}} </title>
+    {% else %}
+        <title>Pickle</title>
+    {%endif%}
+<!--Css StyleSheets-->
+<link rel="stylesheet" href="{{ url_for('static',filename='css/app.css') }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='plugins/bootstrap/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='plugins/Owl/owl.carousel.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='plugins/Owl/owl.theme.default.min.css') }}">
+</head>
+<body>
+    {%block main%}{%endblock%}
+</body>
+<script src="{{ url_for('static',filename='plugins/jquery/jquery.min.js') }}"></script>
+<script src="{{ url_for('static',filename='js/app.js') }}"></script>
+<script src="{{ url_for('static',filename='plugins/bootstrap/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static',filename='plugins/Owl/owl.carousel.min.js') }}"></script>
+
+</html>
