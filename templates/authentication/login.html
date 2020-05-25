@@ -1,0 +1,70 @@
+{%extends 'app.html' %}
+{% block main %}
+
+    <div class="row p-0" style="max-height: 100%!important;overflow-y:hidden!important">
+        <div class="col-lg-8 m-0">
+            <img src="{{url_for('static',filename='photos/login3.jpg')}}" alt="" width="100%" style="height: 100%!important;">
+        </div>
+        <div class="col-lg-4 pt-lg-5">
+            
+            <form method="POST" action="" class="pt-lg-2 mt-lg-5">
+                {{form.hidden_tag()}}
+                <fieldset class="form-group">
+                    {% with messages=get_flashed_messages(with_categories=True)%}
+                {% if messages%}
+                    {% for category,message in messages%}
+                        <div class="alert alert-{{category}}">
+                            {{message}}
+                        </div>
+                    {%endfor%}
+                {%endif%}
+            {%endwith%}
+                    <h1 class="text-center">
+                        Log In
+                    </h1>
+                    <hr>
+                     <div class="form-group pr-4 pl-4">
+                        {{form.email.label(class='form-control-label')}}
+
+                        {% if form.email.errors %}
+                        {{form.email(class='form-control form-control-lg is-invalid',placeholder='Enter Your Email')}}
+                        <small class="text-danger alert">
+                            {%for error in form.email.errors%}
+                                {{error}}
+                            {%endfor%}
+                        </small>
+                        {% else%}
+                        {{form.email(class='form-control form-control-lg ',placeholder='Enter Your Email')}}
+                        {% endif %}
+                     </div>
+                     <div class="form-group pr-4 pl-4">
+                        {{form.password.label(class='form-control-label')}}
+
+                        {% if form.password.errors%}
+                        {{form.password(class='form-control form-control-lg is-invalid',placeholder='Password')}}
+                        <small class="text-danger alert">
+                            {%for error in form.password.errors%}
+                                {{error}}
+                            {%endfor%}
+                        </small>
+                        {%else%}
+                        {{form.password(class='form-control form-control-lg',placeholder='Password')}}
+                        {%endif%}
+                     </div>
+                     <div class="form-inline pl-4">
+                        {{form.remember.label(class="form-control-label")}}
+                        {{form.remember(class='form-control ml-2')}}
+                     </div>
+                     <div class="form-group pl-4">
+                        
+                        {{form.submit(class='btn btn-lg btn-outline-info',)}}
+                     </div>
+                     <hr>
+                     <small class="text-muted mt-0">Don't have an Account? <a href="{{ url_for('register')}}">Click Here</a></small>
+                </fieldset>
+            </form>
+        </div>
+        
+    </div>
+
+{%endblock main%}

@@ -1,0 +1,33 @@
+@import "../fonts/Oswald/stylesheet.css";
+@import "../fonts/Dosis/stylesheet.css";
+@import "../fonts/Inconsolata/stylesheet.css";
+@import "../fonts/Orbitron/stylesheet.css";
+@import "../fonts/Playfair_Display/stylesheet.css";
+@import "../fonts/Rosario/stylesheet.css";
+*{
+    font-family: 'Oswald', sans-serif;
+}
+
+.font-1{
+    font-family: 'Inconsolata', monospace;
+}
+
+.font-2{
+    font-family: 'Orbitron', sans-serif;
+}
+
+.font-3{
+    font-family: 'Rosario', sans-serif;
+    
+}
+
+.font-4{
+    font-family: 'Playfair Display', serif;
+}
+
+
+
+
+h1,h2,h3,h4,h5,h6 {
+    font-family: 'Dosis', sans-serif;
+}

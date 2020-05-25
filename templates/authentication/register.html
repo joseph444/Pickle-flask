@@ -1,0 +1,88 @@
+{%extends 'app.html' %}
+{% block main %}
+    <div class="row ">
+        <div class="col-lg-8">
+            <img src="{{url_for('static',filename='photos/register.jpg')}}" alt="" width="100%">
+        </div>
+        <div class="col-lg-4 ">
+            
+            <form action="" method="post" class="pt-lg-5 mt-lg-2">
+                {{form.hidden_tag()}}
+                <fieldset class="form-group">
+                        {% with messages=get_flashed_messages(with_categories=True)%}
+                            {% if messages%}
+                                {% for category,message in messages%}
+                                    <div class="alert alert-{{category}}">
+                                        {{message}}
+                                    </div>
+                                {%endfor%}
+                            {%endif%}
+                        {%endwith%}
+                    <h1 class="text-center ">
+                        Sign Up
+                    </h1>
+                    <hr>
+                    <div class="form-group pr-4 pl-4">
+                        {{form.username.label(class='form-control-label')}}
+                        {% if form.username.errors %}
+                        {{form.username(class='form-control form-control-lg is-invalid',placeholder='Enter Username')}}
+                        <small class="text-danger alert">
+                            {%for error in form.username.errors%}
+                                {{error}}
+                            {%endfor%}
+                        </small>
+                        {% else %}
+                        {{form.username(class='form-control form-control-lg',placeholder='Enter Username')}}
+                        {% endif %}
+                    </div>
+                    <div class="form-group pr-4 pl-4">
+                        {{form.email.label(class='form-control-label')}}
+                        {% if form.email.errors %}
+                        {{form.email(class='form-control form-control-lg is-inavlid',placeholder='Enter Your Email')}}
+                        <small class="text-danger alert">
+                            {%for error in form.email.errors%}
+                                {{error}}
+                            {%endfor%}
+                        </small>
+                        {% else %}
+                        {{form.email(class='form-control form-control-lg',placeholder='Enter Your Email')}}
+                        {% endif %}
+                    </div>
+                    <div class="form-group  pr-4 pl-4">
+                        {{form.password.label(class='form-control-label')}}
+                        {% if form.password.errors %}
+                        {{form.password(class='form-control form-control-lg is-invalid',placeholder='Password')}}
+                        <small class="text-danger alert">
+                            {%for error in form.password.errors%}
+                                {{error}}
+                            {%endfor%}
+                        </small>
+                        {% else %}
+                        {{form.password(class='form-control form-control-lg',placeholder='Password')}}
+                        {%endif%}
+                    </div>
+                    <div class="form-group pr-4 pl-4">
+                        {{form.confirmPassword.label(class='form-control-label')}}
+                        {% if form.confirmPassword.errors %}
+                        {{form.confirmPassword(class='form-control form-control-lg is-invalid',placeholder='Confirm Password')}}
+                        <small class="text-danger alert">
+                            {%for error in form.confirmPassword.errors%}
+                                {{error}}
+                            {%endfor%}
+                        </small>
+                        {% else %}
+                        {{form.confirmPassword(class='form-control form-control-lg',placeholder='Confirm Password')}}
+                        {%endif%}
+                        
+                    </div>
+                    <div class="form-group pl-4">
+                        {{form.submit(class='btn btn-outline-info')}}
+                    </div>
+                </fieldset>
+                <hr>
+                <small class="mb-lg-2">Have An Account? <a href="{{url_for('Login')}}">Login</a></small>
+            </form>
+           
+        </div>
+    </div>
+{%endblock%}

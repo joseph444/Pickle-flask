@@ -8,18 +8,35 @@
     {% else %}
         <title>Pickle</title>
     {%endif%}
+
 <!--Css StyleSheets-->
-<link rel="stylesheet" href="{{ url_for('static',filename='css/app.css') }}">
-<link rel="stylesheet" href="{{ url_for('static',filename='plugins/bootstrap/bootstrap.min.css') }}">
-<link rel="stylesheet" href="{{ url_for('static',filename='plugins/Owl/owl.carousel.min.css') }}">
-<link rel="stylesheet" href="{{ url_for('static',filename='plugins/Owl/owl.theme.default.min.css') }}">
-</head>
-<body>
-    {%block main%}{%endblock%}
-</body>
+
+
+
+<link rel="stylesheet" href="{{url_for('static', filename='plugins/bootstrap/bootstrap.min.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='plugins/Owl/owl.carousel.min.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='plugins/Owl/owl.theme.default.min.css')}}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="{{url_for('static', filename='css/app.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='css/colors.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='css/fonts.css')}}">
+<link rel="shortcut icon" href="{{ url_for('static',filename='photos/favicon.ico') }}" type="image/x-icon">
 <script src="{{ url_for('static',filename='plugins/jquery/jquery.min.js') }}"></script>
-<script src="{{ url_for('static',filename='js/app.js') }}"></script>
-<script src="{{ url_for('static',filename='plugins/bootstrap/bootstrap.min.js') }}"></script>
-<script src="{{ url_for('static',filename='plugins/Owl/owl.carousel.min.js') }}"></script>
+<script src="{{url_for('static', filename='plugins/bootstrap/bootstrap.min.js')}}"></script>
+<script src="{{url_for('static', filename='plugins/Owl/owl.carousel.min.css')}}"></script>
+<script src="{{url_for('static',filename='js/app.js')}}"></script>
+</head>
+
+{% if bg %}
+<body class={{bg}}>
+{%else %}
+<body class="blue-grey-0">
+{%endif%}
+{%include 'nav.html'%}   
+{%block main%}
+{%endblock main%}
+</body >
+
+
 
 </html>
