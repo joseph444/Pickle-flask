@@ -1,6 +1,6 @@
 <header>
-    <nav class="navbar navbar-expand-sm navbar-dark desktop bg-for-nav bg-dark pt-0 pb-0">
-        <a class="navbar-brand text-center pt-0 pb-0" href="/"><span class="text-white font-4 px-5 mx-5" style="font-size: 2.5rem!important;">Pickle</span></a>
+    <nav class="navbar navbar-expand-sm navbar-dark desktop bg-for-nav bg-dark pt-0 pb-0 ">
+        <a class="navbar-brand pt-0 pb-0" href="/"> <img src="{{ url_for('static',filename='photos/Logo.png') }}" width="5%" class="pt-0  mb-1 ml-lg-5 mr-lg-2" alt="The logo"> <span class="text-white font-4 large-text mt-2 pt-2">Pickle </span>  </a>
        
         <div class="collapse navbar-collapse" >
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
@@ -8,32 +8,63 @@
             </ul>
             
         </div>
-        <div class="navbar-nav mr-lg-5 p-0 mt-0">
+        <div class="navbar-nav mr-lg-5 p-0 mt-0 mr-lg-5">
             <a class=" nav-item nav-link text-white" href="/" >Home </a>
+            {% if current_user.is_authenticated%}
+            <div class="dropdown open mb-0">
+                <a class="nav-item nav-link text-white dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onmouseover="$('#menu1').show()" onmouseout="$('#menu1').hide()">
+                            {{current_user.Username}}
+            </a>
+                <div class="dropdown-menu mt-0" aria-labelledby="triggerId" id="menu1" onmouseover="$(this).show()" onmouseout="$(this).hide()">
+                    <a href="#" class="dropdown-item " ><i class="fa fa-cog" aria-hidden="true"></i>Settings</a>
+                    <a class="dropdown-item " href="/account"><i class="fa fa-user-o" aria-hidden="true"></i> Account</a>
+                    <a class="dropdown-item " href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</a>
+                </div>
+            </div>
+            <span class="nav-item nav-link px-5"></span>
+            <span class="nav-item nav-link px-5"></span>
+           
+            {% else %}
             <a href="/login" class="nav-item nav-link text-white">Login</a>
             <a href="/register" class="nav-item nav-link text-white">Register</a>
+            {% endif %}
         </div>
        
     </nav>
     
-    <nav class="navbar navbar-expand-lg fixed-top shadow navbar-dark navbar-offcanvas  mobile bg-dark" >
-        <a class="navbar-brand mr-auto" href="/"></a>
+    <nav class="navbar navbar-expand-lg  shadow navbar-dark navbar-offcanvas  mobile bg-dark" >
+        <a class="navbar-brand mr-auto" href="/">
+            <span class="text-white font-4 " style="font-size: 2rem!important;">  Pickle</span>
+        </a>
     
-        <button class="navbar-toggler d-block" type="button" id="navToggle">
-            <span class="fa fa-list"></span>
+        <button class="navbar-toggler d-block float-left" type="button" id="navToggle">
+            <i class="fa fa-th-list" aria-hidden="true"></i>
+
         </button>
     
-        <div class="navbar-collapse offcanvas-collapse bg-red-up">
+        <div class="navbar-collapse offcanvas-collapse black-tb" style="z-index: 9999999999;">
             <ul class="navbar-nav mr-auto ">
-                <li class="nav-item ">
-                    <a class="nav-link hoverable" href="/">Home </a>
+                <li class="nav-item hoverable">
+                    <a class="nav-link text-white p-3" href="/">Home </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/login" class="nav-link hoverable">Login</a>
+                {% if current_user.is_authenticated%}
+                
+                <li class="nav-item hoverable p-3">
+                    <a href="/account" class="nav-link text-white ">Account</a>
                 </li>
-                <li class="nav-item">
-                    <a href="/register" class="nav-link hoverable">Register</a>
+                
+                <li class="nav-item hoverable p-3">
+                    <a href="/logout" class="nav-link text-white ">Logout</a>
                 </li>
+                {% else %}
+                <li class="nav-item hoverable p-3">
+                    <a href="/login" class="nav-link text-white ">Login</a>
+                </li>
+                <li class="nav-item hoverable p-3">
+                    <a href="/register" class="nav-link text-white ">Register</a>
+                </li>
+                {% endif %}
+               
 
             </ul>
     

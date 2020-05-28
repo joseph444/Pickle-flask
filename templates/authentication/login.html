@@ -2,10 +2,10 @@
 {% block main %}
 
     <div class="row p-0" style="max-height: 100%!important;overflow-y:hidden!important">
-        <div class="col-lg-8 m-0">
-            <img src="{{url_for('static',filename='photos/login3.jpg')}}" alt="" width="100%" style="height: 100%!important;">
+        <div class="col-lg-9 m-0">
+            <img src="https://ik.imagekit.io/Pickle/login3_kH2hEwv2GR.jpg" alt="" width="100%" style="height: 100%!important;">
         </div>
-        <div class="col-lg-4 pt-lg-5">
+        <div class="col-lg-3 pt-lg-5">
             
             <form method="POST" action="" class="pt-lg-2 mt-lg-5">
                 {{form.hidden_tag()}}
@@ -61,6 +61,8 @@
                      </div>
                      <hr>
                      <small class="text-muted mt-0">Don't have an Account? <a href="{{ url_for('register')}}">Click Here</a></small>
+                    <br> <small class="text-muted mt-0">Forgot Password? <a href="/forget_password">Click Here</a></small>
+                     
                 </fieldset>
             </form>
         </div>

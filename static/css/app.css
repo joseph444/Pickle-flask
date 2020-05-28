@@ -3,6 +3,7 @@ body {
     overflow-x: hidden;
 }
 
+
 .nav-item:active{
     color:brown;
 }
@@ -81,7 +82,7 @@ body {
     color: #343a40;
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 768px) {
     .desktop {
       display: none!important;
     }
@@ -89,7 +90,7 @@ body {
         background-color:#ECEFF1!important;
     }
   }
-  @media screen and (min-width: 800px) {
+  @media screen and (min-width: 768px) {
    .mobile {
       display: none!important;
     }
@@ -98,5 +99,11 @@ body {
 
 
 
-.hoverable{-webkit-transition:-webkit-box-shadow .25s;transition:-webkit-box-shadow .25s;transition:box-shadow .25s;transition:box-shadow .25s, -webkit-box-shadow .25s}
-.hoverable:hover{-webkit-box-shadow:0 8px 17px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);box-shadow:0 8px 17px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19)}
+.hoverable{-webkit-transition:-webkit-box-shadow .25s;transition:-webkit-box-shadow .25s;transition:box-shadow .25s;transition:box-shadow .25s, -webkit-box-shadow .25s;}
+.hoverable:hover{-webkit-box-shadow:0 8px 17px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);box-shadow:0 8px 17px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);}
+#profimg{
+    width:120px!important;
+    height: 120px!important;
+    border-radius: 50%!important;
+    
+}

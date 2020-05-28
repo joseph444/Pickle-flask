@@ -1,0 +1,46 @@
+{%extends 'app.html' %}
+{% block main %}
+
+    <div class="row p-0" style="max-height: 100%!important;overflow-y:hidden!important">
+        <div class="col-lg-9 m-0">
+            <img src="https://ik.imagekit.io/Pickle/Forget1_vzgXs0VE6.jpg" alt="" width="100%" style="height: 100%!important;">
+        </div>
+        <div class="col-lg-3 pt-lg-5 mt-lg-5">
+             <form action="" method="post">
+                {{form.hidden_tag()}}
+                <fieldset class="form-group pr-2 pt-lg-5 mt-lg-5">
+                    {% with messages=get_flashed_messages(with_categories=True)%}
+                        {% if messages%}
+                            {% for category,message in messages%}
+                                <div class="alert alert-{{category}}">
+                                    {{message}}
+                                </div>
+                            {%endfor%}
+                        {%endif%}
+                    {%endwith%}
+                    <h1 class="text-center">Forget Password</h1>
+                    <hr>
+                    <div class="form-group">
+                        {{form.email.label(class='form-control-label')}}
+                        {% if form.email.errors %}
+                        {{form.email(class='form-control form-control-lg is-inavlid',placeholder='Enter Your Email')}}
+                        <small class="text-danger alert">
+                            {%for error in form.email.errors%}
+                                {{error}}
+                            {%endfor%}
+                        </small>
+                        {% else %}
+                        {{form.email(class='form-control form-control-lg',placeholder='Enter Your Email')}}
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{form.submit(class='btn btn-outline-info')}}
+                    </div>
+                            
+                </fieldset>
+             </form>
+        </div>
+        
+    </div>
+
+{%endblock main%}
