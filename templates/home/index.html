@@ -1,11 +1,20 @@
 {% extends 'app.html'%}
 
 {%block main%}
-<div class="row desktop">
-          <div class="col-md-3 black-tb p-5">
-                  <div class="container">
-
-                  </div>
+<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+     <div class="modal-dialog modal-center">
+       <div class="modal-content">              
+         <div class="modal-body">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+           <img src="" class="postimagepreview" style="width: 100%;" >
+         </div>
+       </div>
+     </div>
+   </div>
+<div class="row justify-content-center">
+          <div class="col-xl-4 ">
+                
+               {%include 'posts/template.html'%}
           </div>
 </div>
 {%endblock%}

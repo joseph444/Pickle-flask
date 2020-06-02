@@ -1,6 +1,6 @@
 <header>
     <nav class="navbar navbar-expand-sm navbar-dark desktop bg-for-nav bg-dark pt-0 pb-0 ">
-        <a class="navbar-brand pt-0 pb-0" href="/"> <img src="{{ url_for('static',filename='photos/Logo.png') }}" width="5%" class="pt-0  mb-1 ml-lg-5 mr-lg-2" alt="The logo"> <span class="text-white font-4 large-text mt-2 pt-2">Pickle </span>  </a>
+        <a class="navbar-brand pt-0 pb-0" href="/" style="margin-left:28rem!important ;"> <img src="{{ url_for('static',filename='photos/Logo.png') }}" width="5%" class="pt-0  mb-1 ml-lg-5 mr-lg-2" alt="The logo"> <span class="text-white font-4 large-text mt-2 pt-2">Pickle </span>  </a>
        
         <div class="collapse navbar-collapse" >
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
@@ -10,6 +10,7 @@
         </div>
         <div class="navbar-nav mr-lg-5 p-0 mt-0 mr-lg-5">
             <a class=" nav-item nav-link text-white" href="/" >Home </a>
+            <a class=" nav-item nav-link text-white" href="/search" >Search </a>
             {% if current_user.is_authenticated%}
             <div class="dropdown open mb-0">
                 <a class="nav-item nav-link text-white dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onmouseover="$('#menu1').show()" onmouseout="$('#menu1').hide()">
@@ -46,6 +47,10 @@
             <ul class="navbar-nav mr-auto ">
                 <li class="nav-item hoverable">
                     <a class="nav-link text-white p-3" href="/">Home </a>
+                    
+                </li>
+                <li class="nav-item hoverable p-3">
+                    <a class=" nav-item nav-link text-white" href="/search" >Search </a>
                 </li>
                 {% if current_user.is_authenticated%}
                 

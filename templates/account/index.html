@@ -7,17 +7,65 @@
 {%set Pimg=current_user.Profile_img  %}
 {%set theme=current_user.theme%}
 {%set themeclass=Theme.get_theme(current_user.theme)%}
+
+{% set description=current_user.Description%}
+{%set userJson=thejson%}
 {%set defaultTheme= theme in ['Original']%}
 {%set FriendIdarray=current_user.Friends.split(',')%}
 {%set NoofFriends=(FriendIdarray|length)-1%}
-    
 
-<!--Modal for Profile Image Change-->
-<!-- Button trigger modal -->
+{#The Spinner#}
 
 
-<!-- Modal -->
-<div class="modal fade" id="ProfImg" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+<div id="spinner" >
+    <div class="spinner-grow text-muted"></div>
+    <div class="spinner-grow text-primary"></div>
+    <div class="spinner-grow text-success"></div>
+    <div class="spinner-grow text-info"></div>
+    <div class="spinner-grow text-warning"></div>
+    <div class="spinner-grow text-danger"></div>
+    <div class="spinner-grow text-secondary"></div>
+    <div class="spinner-grow text-dark"></div>
+    <div class="spinner-grow text-light"></div>
+
+</div>
+
+{#Toasts#}
+
+
+
+{#--modals--#}
+
+{#first#}
+
+<div class="modal fade" id="changetheme" tabindex="-1" role="dialog" aria-labelledby="ChangeUserTheme" aria-hidden="true" data-backdrop='static'>
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">The Available Themes Are</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+         <div class="container">
+             
+             <div class="container container-fluid">
+                 <div class="card-columns" id="loopForTheme">
+
+                 </div>
+             </div>
+         </div>
+        </div>
+       
+      </div>
+    </div>
+  </div>
+{#-end-#}
+
+{#second imageChange#}
+
+<div class="modal fade" id="ProfImg" tabindex="-1" role="dialog" aria-labelledby="ChangeImage" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             {%if defaultTheme  %}
@@ -72,126 +120,482 @@
     </div>
 </div>
 
-<script>
-    $('#ProfImg').on('show.bs.modal', event => {
-        var button = $(event.relatedTarget);
-        var modal = $(this);
-        // Use above variables to manipulate the DOM
-        
-    });
-</script>
-  
-<div class="row p-5 desktop">
-       <div class="col-sm-3 ">
-           {% if defaultTheme%}
-                <div class="card {{themeclass}}">
-            {%else%}
-            <div class="card {{themeclass}}rl">
-            {%endif%}
-               <div class="card-body d-flex flex-row">
-                <div class="float-left">
-                    <a href="#ProfImg" type="button" data-toggle="modal">
-                        <img class="card-img-top " src="{{Pimg}}" alt="Card image cap">
-                    </a>
-                </div>
-                <div class="float-right pr-lg-5 ">
-                    <h4 class="card-title pb-0 mb-0 pl-lg-3">{{username}}</h4>
-                   <p class="card-text pt-0 mt-0 pl-lg-3">{{email}}</p>
-                </div>
-                   
-               </div>
-               <ul class="list-group list-group-flush">
-                   <li class="list-group-item"> Your Current Theme:<span id="ThemeName">{{theme}} </span> 
-                       <br>
-                       Change Your Theme
-                       <span class=" form-group">
-                            <select name="" class="form-control" id="chngThm" >
-                                {% for key in Theme.allTheme()%}
-                                    {% if theme==key%}
-                                        <option value="{{key}}" selected>{{key}}</option>
-                                    {%else%}
-                                        <option value="{{key}}">{{key}}</option>
-                                    {%endif%}
-                                {% endfor%}
-                            </select>
-                        </span>
-                    </li>
-                   <li class="list-group-item">Number of Friends: {{NoofFriends}} </li>
-                  
-               </ul>
-           </div>
-           {# Profile Picture Usernamme and nicche choto kore ekta email ta #}
-       </div>
-       <div class="col-sm-8 desktop">
-        {% if defaultTheme%}
-           <div class="container border  {{themeclass}} row">
-        {% else %}
-            <div class="container border  {{themeclass}}rl  row">
-        {%endif%}
-        <div class="col-md-3 p-3">
-            <a href="#ProfImg" type="button" data-toggle="modal">
-                <img class="rounded-circle" src="{{Pimg}}" alt="Card image cap"  id="profimg">
-            </a>
-        </div>
-        
-        <div class="col-md-7 pt-3">
-            <h1 class="py-4 ">{{username}}</h1>
-        </div>
-            
-           </div>
-       </div>
-       
-    </div>
+{#end#}
 
-<div class="row mobile">
-    <div class="col-sm-12 mobile ">
-        {%if defaultTheme%}
-        <div class=" rounded  row justify-content-center {{themeclass}}" >
-        {%else%}
-        <div class=" rounded  row justify-content-center {{themeclass}}rl" >
-        {%endif%}
-        <div class="col p-2 ml-3 ml-0">
-            <a href="#ProfImg" type="button" data-toggle="modal">
-                <img class=" rounded-circle" src="{{Pimg}}" alt="Card image cap" id="profimg">
-               </a>
-        </div>
-        
-        <div class="col p-2 mx-0">
-            <h1 class="">{{username}}</h1>
-        </div>
-         
-        </div>
-           <div class="container mt-5 mx-auto row justify-content-center">
-               <div class="col-sm-2 ">
-                   <ul class="list-group">
-                       {%if defaultTheme%}
-                       <li class="list-group-item {{themeclass}} text-dark">Email: {{email}}</li>
-                       {%else%}
-                       <li class="list-group-item {{themeclass}}rl text-dark">Email: {{email}}</li>
-                       {%endif%}
-                       <li class="list-group-item"> Your Current Theme:<span id="ThemeName2">{{theme}} </span> 
-                        <br>
-                        Change Your Theme
-                        <span class=" form-group">
-                             <select name="" class="form-control" id="chngThm1" >
-                                 {% for key in Theme.allTheme()%}
-                                     {% if theme==key%}
-                                         <option value="{{key}}" selected>{{key}}</option>
-                                     {%else%}
-                                         <option value="{{key}}">{{key}}</option>
-                                     {%endif%}
-                                 {% endfor%}
-                             </select>
-                         </span>
-                     </li>
-                    <li class="list-group-item">Number of Friends: {{NoofFriends}} </li>
-                   
-                   </ul>
-               </div>
-               
+{# third Modal #}
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="newpost" tabindex="-1" role="dialog" aria-labelledby="Create A Post" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+                <div class="modal-header">
+                        <h5 class="modal-title">Create A New Post</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                    </div>
+            <form action="/post/create" method="post" enctype="multipart/form-data">
+                {{forms.hidden_tag()}}
             
-           </div>
+                <div class="modal-body">
+                    <fieldset class="form-group">
+                        {% with messages=get_flashed_messages(with_categories=True)%}
+                            {% if messages%}
+                                {% for category,message in messages%}
+                                    <div class="alert alert-{{category}}">
+                                        {{message}}
+                                    </div>
+                                {%endfor%}
+                            {%endif%}
+                        {%endwith%}
+                        <div class="form-group">
+                            {{forms.Title.label(class='form-group-label')}}
+                            {% if forms.Title.errors%}
+                                {{forms.Title(class='form-control form-control-lg is-invalid',placeholder='Title of the Post')}}
+                                <small class="text-danger alert">
+                                    {%for error in forms.Title.errors%}
+                                        {{error}}
+                                    {%endfor%}
+                                </small>
+                            {%else%}
+                                {{forms.Title(class='form-control form-control-lg',placeholder='Title of the Post')}}
+                            {%endif%}
+                        </div>
+                        <div class="form-group">
+                            {{forms.Type.label(class='form-group-label')}}
+                            {% if forms.Title.errors%}
+                                {{forms.Type(class='form-control form-control-lg is-invalid',id='posttype')}}
+                                <small class="text-danger alert">
+                                    {%for error in forms.Title.errors%}
+                                        {{error}}
+                                    {%endfor%}
+                                </small>
+                            {%else%}
+                                {{forms.Type(class='form-control form-control-lg', id='posttype')}}
+                            {%endif%}
+                        </div>
+                        <div class="form-group">
+                            {{forms.Description.label(class='form-control-label')}}
+                            {%if forms.Description.errors%}
+                            {{forms.Description(class='form-control form-control-lg no-resize is-invalid',col='20',rows='5')}}
+                            <small class="text-danger alert">
+                                {%for error in forms.Title.errors%}
+                                    {{error}}
+                                {%endfor%}
+                            </small>
+                            {%else%}
+                            {{forms.Description(class='form-control form-control-lg no-resize',col='20',rows='5',placeholder='Write a short description')}}
+                            {%endif%}
+                        </div>
+                        <div id="recipie">
+                            <h5 class="text-center">Recipie</h5>
+                            <div class="form-group" >
+                                {{forms.Ingredients.label(class="form-control-label")}}
+                                {%if forms.Ingredients.errors%}
+                                    {{forms.Ingredients(class='form-control form-control-lg no-resize is-invalid',placeholder='Ingredients for the Recipie')}}
+                                    <small class="text-danger alert">
+                                        {%for error in forms.Ingredients.errors%}
+                                            {{error}}
+                                        {%endfor%}
+                                    </small>
+                                {%else%}
+                                {{forms.Ingredients(class='form-control form-control-lg no-resize ',placeholder='Ingredients for the Recipie')}}
+                                {%endif%}
+                            </div>
+                            <div class="form-group">
+                                {{forms.Steps.label(class='form-control-label')}}
+                                {%if forms.Steps.errors%}
+                                    {{forms.Steps(class='form-control form-control-lg is-invalid no-resize',placeholder='Steps to your recipie')}}
+                                    <small class="text-danger alert">
+                                        {%for error in forms.Steps.errors%}
+                                            {{error}}
+                                        {%endfor%}
+                                    </small>
+                                {%else%}
+                                {{forms.Steps(class='form-control form-control-lg no-resize',placeholder='Steps to your recipie')}}
+                                {%endif%}
+                            </div>
+                        </div>
+                        <div id="rate">
+                            <h5 class="text-center">Ratings</h5>
+                            <div class="form-group" >
+                                {{forms.FoodQuality.label(class='form-control-class')}}
+                                {%if forms.FoodQuality.errors%}
+                                {{forms.FoodQuality(class='form-control form-control-lg is-invalid',placeholder='Tell Us About the Food Quality of the Place')}}
+                                <small class='text-danger alert'>
+                                    {%for error in forms.FoodQuality.errors%}
+                                        {{error}}
+                                    {%endfor%}
+                                </small>
+                                {%else%}
+                                {{forms.FoodQuality(class='form-control form-control-lg ',placeholder='Tell Us About the Food Quality of the Place')}}
+                                {%endif%}
+                            </div>
+                            <div class="form-group">
+                                {{forms.Services.label(class='form-control-label')}}
+                                {%if forms.Services.errors%}
+                                {{forms.Services(class='form-control form-control-lg is-invalid',placeholder='Tell us About the  Quality of The Services')}}
+                                <small class='text-danger alert'>
+                                    {%for error in forms.Services.errors%}
+                                        {{error}}
+                                    {%endfor%}
+                                </small>
+                                {%else%}
+                                {{forms.Services(class='form-control form-control-lg ',placeholder='Tell us About the Quality of The Services')}}
+                                {%endif%}
+                            </div>
+                            <div class="form-group">
+                                {{forms.Cleanliness.label(class='form-control-label')}}
+                                {%if forms.Cleanliness.errors%}
+                                {{forms.Cleanliness(class='form-control form-control-lg is-invalid',placeholder='Tell Us About the Hygine and Cleanliness of that Place')}}
+                                <small class='text-danger alert'>
+                                    {%for error in forms.Cleanliness.errors%}
+                                        {{error}}
+                                    {%endfor%}
+                                </small>
+                                {%else%}
+                                {{forms.Cleanliness(class='form-control form-control-lg ',placeholder='Tell Us About the Hygine and Cleanliness of that Place')}}
+                                {%endif%}
+                            </div>
+                            <div class="form-group">
+                                {{forms.Behaviour.label(class='form-control-label')}}
+                                {%if forms.Behaviour.errors%}
+                                {{forms.Behaviour(class='form-control form-control-lg is-invalid',placeholder='Tell Us About the Hygine and Cleanliness of that Place')}}
+                                <small class='text-danger alert'>
+                                    {%for error in forms.Cleanliness.errors%}
+                                        {{error}}
+                                    {%endfor%}
+                                </small>
+                                {%else%}
+                                {{forms.Behaviour(class='form-control form-control-lg ',placeholder='Tell Us About the Hygine and Cleanliness of that Place')}}
+                                {%endif%}
+                        </div>
+                        </div>
+                        <div class="form-group">
+                            {{forms.Images.label(class='form-control-lg')}}
+                                {{forms.Images(class='hidden',id='uploadAnewImage',multiple='multiple')}}
+                                <a class="btn btn-secondary text-center" onclick="document.getElementById('uploadAnewImage').click();" >Browse</a>
+                                <span>Click on Browse to Upload a Image</span>
+                                {%if forms.Images.error%}
+                                <small class='text-danger alert' >
+                                    {%for error in forms.Images.errors%}
+                                        {{error}}
+                                    {%endfor%}
+                                </small>
+                                {%else%}
+                                {%endif%}
+                        </div>
+
+                        
+
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-secondary" data-dismiss="modal">Discard</button>
+                    {{forms.Submit(class='btn btn-primary')}}
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
-</div>   
+
+{#ends#}
+
+{#fourth#}
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="followers" tabindex="-1" role="dialog" aria-labelledby="Followers" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="M_TITLE"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="modal-body" id="ContainHolder">
+               
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+{#end#}
+
+{#--modals--#}
+
+
+
+<div class="row p-3m">
+    <div class="col-lg-3 desktop ">
+        {%if defaultTheme%}
+        <div class="card {{themeclass}} no-overflow">
+        {%else%}
+        <div class="card {{themeclass}}rl no-overflow">
+        {%endif%}
+            <div class="card-body row ">
+                
+                <div class="col p-0 justify-content-center" style="width: min-content;">
+                    <div class="profile-img-side float-right">
+                        <a href="#ProfImg" type="button" data-toggle="modal">
+                        <img src="{{resized_img_src(Pimg,width=100,height=100,mode='crop',quality=100000000)}}" alt="side Image" >
+                        </a>
+                    </div>
+                </div>
+                <div class="col text-left ">
+                    <fieldset class="username-side font-2">{{username}}</fieldset>
+                    <fieldset class="email-side">{{email}}</fieldset>
+                </div>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <div class="container text-center">
+                        <h5>Your Current theme :</h5>
+                        <h1 class="themename">{{theme}}</h1>
+                        
+                        
+                    </div>
+                    <a href="#changetheme" class="float-right" data-toggle="modal" >
+                        <i class="fa fa-plus-square" aria-hidden="true"></i>
+                    </a>
+                    
+                </li>
+                <li class="list-group-item">
+                    <div class="container py-3 text-center">
+                        <h2>
+                          <span id="Followers"> Followers: {{userJson.noOFFollowers}}</span>
+                            <br>
+                            <span id="Followings">Following: {{userJson.noOFFollowings}}</span>  
+                        </h2>
+                    </div>
+                </li>
+               
+            </ul>
+        </div>
+    </div>
+    <div class="col-xl-9">
+        {%if defaultTheme%}
+        <div class="container container-fluid m-0 {{themeclass}} border theme-ground">
+        {%else%}
+        <div class="container container-fluid m-0 {{themeclass}}rl border theme-ground">
+        {%endif%}
+        <div class=""><h3 class="username-name display-4 ">{{username}}</h3></div>
+        </div>
+        <div class="container container-fluid m-0 border p-4m " style="padding-bottom: 0!important;">
+           <div class="position-absolute-profile">
+               <div class="profile-img-main">
+                <a href="#ProfImg" type="button" data-toggle="modal">
+                   <img src="{{resized_img_src(Pimg,width=135,height=135,mode='crop',quality=100000000)}}" alt="main image"  width="100%" >
+                </a>
+               </div>
+           </div>
+          
+           <div class="info-box mobile border-rounded">
+               
+              <ul class="list-group">
+                  <li class="list-group-item ">
+                      <div class="container text-center p-0">
+                        <p class='sm-txt m-0'>Your Current theme :</p>
+                        <h5 class="sm-txt-1 p-0 m-0">{{theme}}</h5>
+                        
+                      </div>
+                      <a href="#changetheme" class="float-right" data-toggle="modal" >
+                          <i class="fa fa-plus-square" aria-hidden="true"> </i>
+                      </a>
+                  </li>
+                  <li class="list-group-item">
+                    <div class="container py-1 text-center">
+                        <h6 class="sm-txt">
+                            <span id="Followers"> Followers: {{userJson.noOFFollowers}}</span>
+                            <br>
+                            <span id="Following">Following: {{userJson.noOFFollowings}}</span> 
+                        </h6>
+                    </div>
+                  </li>
+                  
+              </ul>
+
+           </div>
+           <div class="description-box form-group" >
+               <fieldset class="font-2">About Me <a href="#changedesc" class="float-right"><i class="fa fa-pencil-square text-dark" aria-hidden="true"></a></i></fieldset>
+           
+            <textarea  id="descriptionH" style="resize:none;" class="border-0 form-control"  readonly placeholder="...nothing to show..." wrap="soft" rows="5" cols="20" onfocus="(this.readOnly=false)" onfocusout="(this.readOnly=true)">{{description}}</textarea>
+            
+           
+        </div>
+        <div class="create-post-box py-3">
+            <div class="group-btn text-center pt-lg-3" >
+                <a href="#newpost" data-toggle="modal" class="btn btn-primary" id=''> <span><i class="fa fa-beer" aria-hidden="true"></i></span> New Post</a>
+                <a href="#" class="btn btn-warning"><span><i class="fa fa-envelope-open" aria-hidden="true"></i></span> Messages</a>
+                <a href="#followers" class="btn btn-success" data-toggle="modal" id='following'> <span><i class="fa fa-users" aria-hidden="true"></i></span> Following</a>
+                <a href="#followers" class="btn btn-danger" data-toggle="modal" id='follower'><span><i class="fa fa-address-card" aria-hidden="true"></i></span> Followers</a>
+            </div>
+           
+        </div>
+        </div>
+    </div>
+    <div class="col-xl-3"></div>
+    <div class="col-xl-6  p-3">
+        {%if defaultTheme%}
+        <div class="container container-fluid border rounded  {{themeclass}}" >
+        {%else%}
+        <div class="container container-fluid border rounded {{themeclass}}tb" >
+        {%endif%}
+        <h1 class="text-center text-dark py-3" id="content_head">
+            Your Tasty Recipies and Memories are here
+        </h1>
+        <hr class="border" style="border-color: black!important;"> 
+        </div>
+        <div class="container  border" id="contentHolder">
+            {%include 'posts/template.html'%}
+            
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(
+        function(){
+            setInterval( ()=> {
+                $.ajax({
+                    type:"GET",
+                    url:"/get_ff",
+                    success:function(e){
+                        $("#Followers").text("Followers: "+e['followers'].length)
+                        $("#Followings").text("Followings: "+e['followings'].length)
+                        
+                        
+                    },
+                    error:function(e,f){
+                        console.log(e.response)
+                    }
+                    
+                })
+            },6000);
+        }
+    );
+$(document).ready(
+    function(){
+        var ContentHeading={
+            'post':'Your Tasty Recipies and Memories are here',
+            'followers':'Your Followers',
+            'followings':'People You are following'
+        };
+
+        $('#following').click(function(e){
+            e.preventDefault();
+            $("#M_TITLE").text(ContentHeading['followings']);
+           
+            $('#ContainHolder').html("");
+            $.ajax(
+                {
+                    url:'/get_followings',
+                    type:"POST",
+                    success:function(response){
+                        if(response==='0'){
+                            $("#ContainHolder").html("<div><h1>No Followings</h1></div>\
+                            <div class='text-center btn-group'><button id='posts' class='btn btn-dark' onclick='MyPosts()'>Return</button>\
+                            <a href='/search' class='btn btn-search'>Search</a> </div>")
+                        }
+                        else{
+                            $('#ContainHolder').append('<ul class="list-group">');
+                            for(var k in response){
+                                i=false;
+                                var template='<li class="list-group-item {theme}" onclick="location.replace(\'/profile/{id}\')"><div class="media  my-3">\
+                                <div class="profile-img-side">\
+                                                <a class="d-flex" href="/profile/{id}" class="">\
+                                                    <img src="{pimg}" alt="">\
+                                                </a> </div>\
+                                                <div class="media-body" style="word-break: break-all;" onclick="location.replace(\'/profile/{id}\')">\
+                                                    <h4>{name}</h4>\
+                                                    \
+                                                </div></div>\
+                                            </li>';
+                                var Person=response[k];
+                                var Id=Person.Id;
+                                var Name=Person.Username;
+                                var Pimg=Person.Pimg;
+                                var Theme=GetTheFkingTheme(Person.Theme);
+                                template=template.replace('{theme}',Theme);
+                                template=template.replace('{id}',Id);
+                                template=template.replace('{pimg}',Pimg);
+                                template=template.replace('{name}',Name);
+                                $('#ContainHolder').append(template);
+                                
+                                
+                            }
+                            $('#ContainHolder').append('</ul>');
+                        }
+                        $("#followers").modal('show');
+                    }
+                }
+            );
+
+        });
+        $('#follower').click(function(e){
+            e.preventDefault();
+            $("#M_TITLE").text(ContentHeading['followers']);
+            
+            $('#ContainHolder').html("");
+            $.ajax(
+                {
+                    url:'/get_followers',
+                    type:"POST",
+                    success:function(response){
+                        if(response==='0'){
+                            $("#ContainHolder").html("<div><h1>Sorry You Don't have any follower</h1></div>\
+                            <div class='text-center'><button id='posts' class='btn btn-dark'onclick='MyPosts()' >Return</button> </div>")
+                        }
+                        else{
+                            for(var k in response){
+                                i=false;
+                                var template='<li class="list-group-item {theme}" onclick="location.replace(\'/profile/{id}\')"><div class="media  my-3">\
+                                <div class="profile-img-side">\
+                                                <a class="d-flex" href="/profile/{id}" class="">\
+                                                    <img src="{pimg}" alt="">\
+                                                </a> </div>\
+                                                <div class="media-body" style="word-break: break-all;" onclick="location.replace(\'/profile/{id}\')">\
+                                                    <h4>{name}</h4>\
+                                                    \
+                                                </div></div>\
+                                            </li>';
+                                var Person=response[k];
+                                var Id=Person.Id;
+                                var Name=Person.Username;
+                                var Pimg=Person.Pimg;
+                                var Theme=GetTheFkingTheme(Person.Theme);
+                                template=template.replace('{theme}',Theme);
+                                template=template.replace('{id}',Id);
+                                template=template.replace('{pimg}',Pimg);
+                                template=template.replace('{name}',Name);
+                                $('#ContainHolder').append(template);
+                                
+                                
+                            }
+                        }
+                        $("#followers").modal('show');
+                    }
+                }
+            );
+        });
+      
+
+        
+       
+    }
+);
+function MyPosts(){
+    $("#content_head").text("Your Tasty Recipies and Memories are here");
+   }
+
+    
+</script>
+  
 {%endblock%}

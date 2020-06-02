@@ -1,0 +1,229 @@
+{% extends 'app.html'%}
+
+{%block main%}
+
+{% set username=current_user.Username%}
+{%set email= current_user.Email%} 
+{%set Pimg=current_user.Profile_img  %}
+{%set theme=current_user.theme%}
+{%set themeclass=Theme.get_theme(current_user.theme)%}
+
+{% set description=current_user.Description%}
+{%if (description|length)<2%}
+{%set description="...Nothing to Show..."%}
+{%set des=False%}
+{%else%}
+{%set des=True%}
+{%endif%}
+{%set defaultTheme= theme in ['Original']%}
+{%set FriendIdarray=current_user.Friends.split(',')%}
+{%set NoofFriends=(FriendIdarray|length)-1%}
+
+{#The Spinner#}
+
+
+<div id="spinner" >
+    <div class="spinner-grow text-muted"></div>
+    <div class="spinner-grow text-primary"></div>
+    <div class="spinner-grow text-success"></div>
+    <div class="spinner-grow text-info"></div>
+    <div class="spinner-grow text-warning"></div>
+    <div class="spinner-grow text-danger"></div>
+    <div class="spinner-grow text-secondary"></div>
+    <div class="spinner-grow text-dark"></div>
+    <div class="spinner-grow text-light"></div>
+
+</div>
+
+{#--modals--#}
+
+{#first#}
+
+<div class="modal fade" id="changetheme" tabindex="-1" role="dialog" aria-labelledby="ChangeUserTheme" aria-hidden="true" data-backdrop='static'>
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">The Available Themes Are</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+         <div class="container">
+             
+             <div class="container container-fluid">
+                 <div class="card-columns" id="loopForTheme">
+
+                 </div>
+             </div>
+         </div>
+        </div>
+       
+      </div>
+    </div>
+  </div>
+{#-end-#}
+
+{#second imageChange#}
+
+<div class="modal fade" id="ProfImg" tabindex="-1" role="dialog" aria-labelledby="ChangeImage" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            {%if defaultTheme  %}
+                <div class="modal-header {{themeclass}}">
+            {%else%}
+                 <div class="modal-header {{themeclass}}rl">
+            {%endif%}     
+            {% with messages=get_flashed_messages(with_categories=True)%}
+            {% if messages%}
+                {% for category,message in messages%}
+                    <div class="alert alert-{{category}}">
+                        {{message}}
+                    </div>
+                {%endfor%}
+            {%endif%}
+        {%endwith%}
+                        <h5 class="modal-title">Profile Image</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                    </div>
+           
+                <div class="modal-body bg-light">
+                    <div class="container text-center">
+                            <img src="{{Pimg}}" alt="" width="100%" id="pimg">
+                    </div>
+                   
+                    <div class="container text-center" id="imgarea" style="display: none;" >
+                        <hr>
+                        <h1>Change Profile Image</h1>
+                        <form action="" id="chngimg_form" method="post">
+                            <input type="file" name="newimg" id="newimg" style="display: none;"  />
+                            <div class="btn-group">
+                                <input type="button" value="Browse..." onclick="document.getElementById('newimg').click();" class="btn btn-secondary" />
+                                <button type="submit" id="applyChng"  class="btn btn-primary" style="display: none;" >Apply the Change <div class="spinner-border ml-auto" id="spinner1" style="display: none;"></div></button>
+                            </div>
+                            
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer ">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    {%if defaultTheme  %}
+                   
+                    <button type="submit" class="btn {{themeclass}}" onclick="$('#imgarea').fadeToggle()">Change</button>
+                    {%else%}
+                    <button type="button" class="btn {{themeclass}}rl" onclick="$('#imgarea').fadeToggle()" >Change</button>
+                    {%endif%}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{#end#}
+
+
+{#--modals--#}
+
+
+
+<div class="row p-3m">
+    <div class="col-lg-3 desktop">
+        {%if defaultTheme%}
+        <div class="card {{themeclass}} no-overflow">
+        {%else%}
+        <div class="card {{themeclass}}rl no-overflow">
+        {%endif%}
+            <div class="card-body row ">
+                
+                <div class="col p-0 justify-content-center" style="width: min-content;">
+                    <div class="profile-img-side float-right">
+                        <a href="#ProfImg" type="button" data-toggle="modal">
+                        <img src="{{Pimg}}" alt="side Image" width="100%">
+                        </a>
+                    </div>
+                </div>
+                <div class="col text-left ">
+                    <fieldset class="username-side font-2">{{username}}</fieldset>
+                    <fieldset class="email-side">{{email}}</fieldset>
+                </div>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <div class="container text-center">
+                        <h5>Your Current theme :</h5>
+                        <h1 class="themename">{{theme}}</h1>
+                        
+                        
+                    </div>
+                    <a href="#changetheme" class="float-right" data-toggle="modal" >
+                        <i class="fa fa-plus-square" aria-hidden="true"></i>
+                    </a>
+                    
+                </li>
+                <li class="list-group-item">
+                    <div class="container py-3 text-center">
+                        <h2>
+                            Friends:{{NoofFriends}}
+                        </h2>
+                    </div>
+                </li>
+               
+            </ul>
+        </div>
+    </div>
+    <div class="col-xl-9">
+        {%if defaultTheme%}
+        <div class="container container-fluid m-0 {{themeclass}} border theme-ground">
+        {%else%}
+        <div class="container container-fluid m-0 {{themeclass}}rl border theme-ground">
+        {%endif%}
+        <div class=""><h3 class="username-name display-4 ">{{username}}</h3></div>
+        </div>
+        <div class="container container-fluid m-0 border p-4m">
+           <div class="position-absolute-profile">
+               <div class="profile-img-main">
+                <a href="#ProfImg" type="button" data-toggle="modal">
+                   <img src="{{Pimg}}" alt="main image" class="img-fluid" width="100%" >
+                </a>
+               </div>
+           </div>
+          
+           <div class="info-box mobile border-rounded">
+               
+              <ul class="list-group">
+                  <li class="list-group-item ">
+                      <div class="container text-center p-0">
+                        <p class='sm-txt m-0'>Your Current theme :</p>
+                        <h5 class="sm-txt-1 p-0 m-0">{{theme}}</h5>
+                        
+                      </div>
+                      <a href="#changetheme" class="float-right" data-toggle="modal" >
+                          <i class="fa fa-plus-square" aria-hidden="true"> </i>
+                      </a>
+                  </li>
+                  <li class="list-group-item">
+                    <div class="container py-1 text-center">
+                        <h6 class="sm-txt">
+                            Friends:{{NoofFriends}}
+                        </h6>
+                    </div>
+                  </li>
+                  
+              </ul>
+
+           </div>
+           <div class="description-box form-group" >
+               <fieldset class="font-2">About Me <a href="#changedesc" class="float-right"><i class="fa fa-pencil-square text-dark" aria-hidden="true"></a></i></fieldset>
+            {%if des%}
+            <input type="text" id="description" class="border-0 form-control" readonly value="{{description}}">
+            {%else%}
+            <input type="text" id="description" class="border-0 form-control" readonly placeholder="{{description}}">
+            {%endif%}
+        </div>
+        </div>
+    </div>
+</div>
+  
+{%endblock%}

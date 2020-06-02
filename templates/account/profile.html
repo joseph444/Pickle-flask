@@ -1,0 +1,300 @@
+{% extends 'app.html'%}
+
+{%block main%}
+{%set Id=user['Id']%}
+{% set username=user['Username']%}
+{%set Pimg=user['Profile_img']  %}
+{%set theme=user['theme']%}
+{%set themeclass=Theme.get_theme(theme)%}
+
+{% set description=user['Description']%}
+{%if (description|length)<2%}
+{%set description="...Nothing to Show..."%}
+{%set des=False%}
+{%elif description == None%}
+{%set description="...Nothing to Show..."%}
+{%set des=True%}
+{%endif%}
+{%set defaultTheme= theme in ['Original']%}
+{%if current_user.is_authenticated%}
+{%set Followed=isFollowed%}
+{%endif%}
+
+{#The Spinner#}
+
+
+<div id="spinner" >
+    <div class="spinner-grow text-muted"></div>
+    <div class="spinner-grow text-primary"></div>
+    <div class="spinner-grow text-success"></div>
+    <div class="spinner-grow text-info"></div>
+    <div class="spinner-grow text-warning"></div>
+    <div class="spinner-grow text-danger"></div>
+    <div class="spinner-grow text-secondary"></div>
+    <div class="spinner-grow text-dark"></div>
+    <div class="spinner-grow text-light"></div>
+
+</div>
+
+{#--modals--#}
+
+{#first#}
+
+
+{#-end-#}
+
+{#second imageChange#}
+
+<div class="modal fade" id="ProfImg" tabindex="-1" role="dialog" aria-labelledby="ChangeImage" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            {%if defaultTheme  %}
+                <div class="modal-header {{themeclass}}">
+            {%else%}
+                 <div class="modal-header {{themeclass}}rl">
+            {%endif%}     
+            {% with messages=get_flashed_messages(with_categories=True)%}
+            {% if messages%}
+                {% for category,message in messages%}
+                    <div class="alert alert-{{category}}">
+                        {{message}}
+                    </div>
+                {%endfor%}
+            {%endif%}
+        {%endwith%}
+                        <h5 class="modal-title">Profile Image</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                    </div>
+           
+                <div class="modal-body bg-light">
+                    <div class="container text-center">
+                            <img src="{{Pimg}}" alt="" width="100%" id="pimg">
+                    </div>
+                   
+                    
+                </div>
+                <div class="modal-footer ">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{#end#}
+
+
+{#--modals--#}
+
+
+
+<div class="row p-3m">
+    <div class="col-lg-3 desktop">
+        {%if defaultTheme%}
+        <div class="card {{themeclass}} no-overflow">
+        {%else%}
+        <div class="card {{themeclass}}rl no-overflow">
+        {%endif%}
+            <div class="card-body row ">
+                
+                <div class="col p-0 justify-content-center" style="width: min-content;">
+                    <div class="profile-img-side float-right">
+                        <a href="#ProfImg" type="button" data-toggle="modal">
+                        <img src="{{Pimg}}" alt="side Image" width="100%">
+                        </a>
+                    </div>
+                </div>
+                <div class="col text-left ">
+                    <fieldset class="username-side font-2">{{username}}</fieldset>
+                    <fieldset class="email-side">{{email}}</fieldset>
+                </div>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <div class="container text-center">
+                        <h5>{{username}}'s Current theme :</h5>
+                        <h1 class="themename">{{theme}}</h1>
+                        
+                        
+                    </div>
+                    
+                    
+                </li>
+                <li class="list-group-item">
+                    <div class="container py-3 text-center">
+                        <h2>
+                            Followers: <span id="Followers">{{followers}}</span><br>
+                            Followings: <span id="Followings">{{following}}</span>
+                        </h2>
+                    </div>
+                </li>
+               
+            </ul>
+        </div>
+    </div>
+    <div class="col-xl-9">
+        {%if defaultTheme%}
+        <div class="container container-fluid m-0 {{themeclass}} border theme-ground">
+        {%else%}
+        <div class="container container-fluid m-0 {{themeclass}}rl border theme-ground">
+        {%endif%}
+        <div class=""><h3 class="username-name display-4 ">{{username}}</h3></div>
+        </div>
+        <div class="container container-fluid m-0 border p-4m">
+           <div class="position-absolute-profile">
+               <div class="profile-img-main">
+                <a href="#ProfImg" type="button" data-toggle="modal">
+                   <img src="{{Pimg}}" alt="main image" class="img-fluid" width="100%" >
+                </a>
+               </div>
+           </div>
+          
+           <div class="info-box mobile border-rounded">
+               
+              <ul class="list-group">
+                  <li class="list-group-item ">
+                      <div class="container text-center p-0">
+                        <p class='sm-txt m-0'>{{username}}'s Current theme :</p>
+                        <h5 class="sm-txt-1 p-0 m-0">{{theme}}</h5>
+                        
+                      </div>
+                      
+                  </li>
+                  <li class="list-group-item">
+                    <div class="container py-1 text-center">
+                        <h6 class="sm-txt">
+                            Followers: <span id="Followers">{{followers}}</span><br>
+                            Followings: <span id="Followings">{{following}}</span>
+                        </h6>
+                    </div>
+                  </li>
+                  
+              </ul>
+
+           </div>
+           <div class="description-box form-group" >
+            <fieldset class="font-2">About Me <a href="#changedesc" class="float-right"><i class="fa fa-pencil-square text-dark" aria-hidden="true"></a></i></fieldset>
+           
+            <textarea   style="resize:none;" class="border-0 form-control"  readonly placeholder="...nothing to show..." wrap="soft" rows="5" cols="20" >{{description}}</textarea>
+        </div>
+        <div class="create-post-box py-3">
+            <div class="group-btn text-center pt-lg-3 " >
+                {%if current_user.is_authenticated%}
+                <button  class="btn btn-warning" ><span><i class="fa fa-envelope-open" aria-hidden="true"></i></span> Messages {{username}}</button>
+                {%if Followed%} 
+                    <button  class="btn btn-success" id='followthisuser'> <span><i class="fa fa-users" aria-hidden="true"></i></span> Unfollow</button>
+                {%else%}
+                    <button class="btn btn-success" id='followthisuser'> <span><i class="fa fa-users" aria-hidden="true"></i></span> Follow</button>
+                {%endif%}
+                {%else%}
+                <a href="/login?next=%2Fprofile%2F{{Id}}" class="btn btn-warning">Login to Follow</a>
+                {%endif%}
+            </div>
+            
+        </div>
+        </div>
+
+    </div>
+    <div class="col-xl-3"></div>
+    <div class="col-xl-6  ">
+        {%if defaultTheme%}
+        <div class="container container-fluid border rounded  {{themeclass}}" >
+        {%else%}
+        <div class="container container-fluid border rounded {{themeclass}}tb" >
+        {%endif%}
+        <h1 class="text-center text-dark py-3" id="content_head">
+            Your Tasty Recipies and Memories are here
+        </h1>
+        <hr class="border" style="border-color: black!important;"> 
+        </div>
+        <div class="container  border" id="contentHolder">
+            {%include 'posts/template.html'%}
+            
+        </div>
+    </div>
+    
+</div>
+  <script>
+      $(document).ready(
+          function(){
+              var flagFollow=true;
+            $("#followthisuser").on('click',
+                
+                function(e){
+                    
+                    var id='{{Id}}';
+                    {%if current_user.is_authenticated%}
+                            {%if Followed%} 
+                            $("#followthisuser").text("Follow");
+                    $.ajax({
+                        type:"POST",
+                        url:"/follow",
+                        data:{
+                            id:id
+                        },
+                        success:function(e){
+
+                            if(e!='Failed'){
+                                var followers=parseInt( $("#Followers").text());
+                            var followers=parseInt( $("#Followers").text());
+                            if(flagFollow){
+                                $("#Followers").text(e);
+                                flagFollow=false;
+                                $("#followthisuser").text("follow");
+                            }
+                            else{
+                                $("#followthisuser").text("Unfollow");
+                                $("#Followers").text(e);
+                                flagFollow=true;
+                            }
+                                
+                            }
+                            else{
+                                
+                            }
+                            
+                        }
+                    });        
+
+                            {%else%}
+                    
+                            $("#followthisuser").text("Unfollow");
+                     $.ajax({
+                            type:"POST",
+                            url:"/follow",
+                            data:{
+                                    id:id
+                                },
+                            success:function(e){
+                                if(e!='Failed'){
+                                var followers=parseInt( $("#Followers").text());
+                                if(flagFollow){
+                                    $("#Followers").text(e);
+                                    flagFollow=false;
+                                    $("#followthisuser").text("Unfollow");
+                                }
+                                else{
+                                    $("#followthisuser").text("follow");
+                                    $("#Followers").text(e);
+                                    flagFollow=true;
+                                }
+                                }
+                                else{
+                                    
+                                }
+                                
+                                }
+                            });  
+                            {%endif%}
+                    {%endif%}
+                }
+            );
+            
+          }
+      )
+      
+  </script>
+{%endblock%}

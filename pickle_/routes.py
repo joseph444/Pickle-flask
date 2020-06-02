@@ -1,12 +1,15 @@
 from flask import render_template,redirect,request,flash
-from pickle_ import app,bcrypt,mail,imagekit
+from pickle_ import app,bcrypt,mail,imagekit,images
 from . import home
-from .form import authentication
+from .form import authentication,postsForm
 from .models.user import User,Post,db
 from flask_login import login_user,current_user,logout_user,login_required
 from flask_mail import Message
 from .exceptions import FileNotFound
+from .UserFollowList import UserJson
+from sqlalchemy import and_,or_,not_
 
+userJson=UserJson()
 class Themes():
     def __init__(self):
         self.themes={
@@ -35,12 +38,52 @@ Theme=Themes()
 
 #normal pages which can be seen without logging in
 
-@app.route("/")
-def index():
-    return home.view.index()
 
 
+@app.route("/search",methods=['POST','GET'])
+def search():
 
+    if request.method=='POST':
+        searchValue=request.form.get('search')
+        if not searchValue:
+            return " "
+        else:
+            if str(searchValue).rfind('%'):
+                str(searchValue).replace("%","'%'")
+            query="%{}%".format(searchValue)
+            searchResult=dict()
+            listofusers=User.query.filter(User.Username.like(query)).all()
+            i=0
+            for user in listofusers:
+                searchResult[i]=user.ret_dict_of_values()
+                i+=1
+        return searchResult
+    return home.view.search()
+
+
+@app.route("/profile/")
+def someFunction1():
+    return redirect("/search")
+
+@app.route("/profile/<id>")
+def profile(id):
+    if not id:
+        return redirect("/search")
+    else:
+        
+        user=User.query.filter_by(Id=id).first()
+        if not user:
+            flash("User Doesn't Exists",'danger')
+            return redirect("/search")
+        else:
+            posts=Post.query.filter_by(user_id=id).order_by(Post.created_at.desc()).all()
+            if not  current_user.is_authenticated:
+                return render_template("account/profile.html",user=user,Theme=Theme,followers=userJson.nooffollowers(user.Username),following=userJson.nooffollowings(user.Username),posts=posts)
+            else:
+                if int(id)==current_user.Id:
+                    return redirect("/account")
+                print(current_user.Id)
+                return render_template("account/profile.html",user=user,Theme=Theme,isFollowed=userJson.checkIfisfollowed(user.Username),followers=userJson.nooffollowers(user.Username),following=userJson.nooffollowings(user.Username),posts=posts)
 
 #user authentication section
 
@@ -58,7 +101,7 @@ def Login():
                         return redirect(next_page)
                     
                     else:
-                        return redirect("/")
+                        return redirect("/account")
                 else:
                     flash("You have to verify your email first",'warning')
             else:
@@ -100,6 +143,7 @@ def activate_user(tokken):
         user=User.query.filter_by(Id=id).first()
         user.isActive=True
         db.session.commit()
+        userJson.create_json(user.Username,user.Id)
         flash("Email is now verified",'success')
         return redirect("/login")
     else:
@@ -162,7 +206,18 @@ def logout():
 @app.route("/account",methods=['GET','POST'])
 @login_required
 def account():
-    return render_template("account/index.html",title="Account",Theme=Theme)
+
+    posts=Post.query.filter_by(user_id=current_user.Id).order_by(Post.created_at.desc()).all()
+    return render_template("account/index.html",title="Account",Theme=Theme,thejson=userJson,forms=postsForm.Posts(),posts=posts)
+
+@app.route("/account_post")
+@login_required
+def get_postS():
+    id=request.args.get('id')
+    if id:
+        pass
+    return " "
+        
 
 
 @app.route("/change_theme")
@@ -223,4 +278,157 @@ def change_img():
             print(x)
         return 'Some Error Occured'
         
+@app.route("/change_desc")
+@login_required
+def change_desc():
+    desc=request.args.get("desc")
     
+    current_user.Description=desc
+    db.session.commit()
+    return "done"
+
+@app.route("/get_ff")
+@login_required
+def get_ff():
+    try:
+        return userJson.ret_data
+    except Exception as e:
+        return e
+
+
+@app.route("/follow",methods=['POST','GET'])
+@login_required
+def follow():
+    followX=request.form.get("id")
+    operation=userJson.addFollower(followX)
+
+    return "{}".format(operation)
+
+@app.route("/get_followers",methods=['POST'])
+@login_required
+def get_followers():
+    followerList=userJson.get_followers()
+    if len(followerList)<1:
+        return "0"
+    Followers=dict()
+    i=0
+    for ids in followerList:
+        user=User.query.filter_by(Id=ids).first()
+        Followers[i]=user.ret_dict_of_values()
+        i+=1
+    return Followers
+
+@app.route("/get_followings",methods=['POST'])
+@login_required
+def get_followings():
+    followerList=userJson.get_followings()
+    if len(followerList)<1:
+        return "0"
+    Followers=dict()
+    i=0
+    for ids in followerList:
+        user=User.query.filter_by(Id=ids).first()
+        Followers[i]=user.ret_dict_of_values()
+        i+=1
+    return Followers
+
+@app.route("/")
+@login_required
+def index():
+    followingIds=userJson.get_followings()
+    followingIds.append(current_user.Id)
+    posts=Post.query.filter(Post.user_id.in_(followingIds) ).order_by(Post.created_at.desc()).all()
+    return render_template('home/index.html',newpost=postsForm.Posts(),posts=posts)
+
+
+def save_img(Image_data,Title):
+    folder_name="/Posts/{}/".format(str(current_user.Username).replace(' ','_'))
+    name=str(current_user.Username).replace(' ','_')
+    import secrets,os
+    _,f_ext=os.path.splitext(Image_data.filename)
+    name+="_"+secrets.token_hex(8)+f_ext
+    tmppath=os.path.join(app.root_path,'tmp',name)
+    Image_data.save(tmppath)
+    f=open(tmppath,'rb')
+    response=imagekit.upload_file(file=f,
+            file_name=name,
+            options={
+                'folder':folder_name,
+                'tags':['Post'],
+                "is_private_file": False,
+                "use_unique_file_name": True,
+            })
+    f.close()
+    if response['error']:
+                print(response['error'])
+                os.remove(tmppath)
+                if Image_data:
+                    flash("Image was not uploaded ",'danger')
+                
+                return None,None
+    else:
+
+        Response=response['response']
+        imgId=Response['fileId']
+        url=Response['url']
+        os.remove(tmppath)
+        return url,imgId
+                
+
+
+@app.route("/post/create",methods=['POST'])
+@login_required
+def create_post():
+    NewPost=postsForm.Posts()
+    if NewPost.validate_on_submit():
+        url=None
+        imgId=None
+        i=0
+        if len(NewPost.Images.data)>0: 
+            print(len(NewPost.Images.data))
+            for image in NewPost.Images.data:
+                if i==0:
+                    url=''
+                    imgId=''
+                    i+=1
+                Url,ImgId=save_img(image,NewPost.Title.data)
+                if Url:
+                    url+=Url+"|"
+                    imgId+=ImgId+"|"
+                else:
+                    print(url)
+                    break
+                
+           
+        if NewPost.Type.data=='Recipie':
+            post=Post(Title=NewPost.Title.data,Description=NewPost.Description.data,Type=NewPost.Type.data,
+                            Ingredients=NewPost.Ingredients.data,Steps=NewPost.Steps.data,Image_source=url,Image_id=imgId,
+                            user_id=current_user.Id
+                            )
+        elif NewPost.Type.data=='Rating':
+               post=Post(Title=NewPost.Title.data,Description=NewPost.Description.data,Type=NewPost.Type.data,
+                            FQ=NewPost.FoodQuality.data,Services=NewPost.Services.data,Cleanliness=NewPost.Cleanliness.data,
+                            Behaviour=NewPost.Behaviour.data,Rating=NewPost.Rating.data,
+                            Image_source=url,Image_id=imgId,
+                            user_id=current_user.Id
+                            )
+        elif NewPost.Type.data=='Foodie':
+            post=Post(Title=NewPost.Title.data,Description=NewPost.Description.data,Type=NewPost.Type.data,
+                        Image_source=url,Image_id=imgId,
+                        user_id=current_user.Id )
+        db.session.add(post)
+        db.session.commit()
+        return redirect("/")
+    else:
+        flash("You must have messed up try to fill all the section for each type",'danger')
+        return redirect("/account")
+
+@app.route("/post/like")
+@login_required
+def like_post():
+    return " "
+
+@app.route("/post/unlike")
+@login_required
+def unlike_post():
+    return " "

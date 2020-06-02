@@ -3,7 +3,9 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from imagekitio.client import ImageKit
 from flask_mail import Mail
+from flask_images import Images
 app=Flask(__name__,template_folder="../templates",static_folder='../static')
+
 #configuration of The WEBAPP
 
 
@@ -20,6 +22,7 @@ app.config['MAIL_USE_SSL'] = True
 bcrypt=Bcrypt(app)
 login=LoginManager(app)
 mail=Mail(app)
+images=Images(app)
 
 login.login_view="Login"
 login.login_message_category="warning"
