@@ -113,6 +113,6 @@ class Post(db.Model):
         username=user.Username
         profImg=user.Profile_img
         post['Username']=username
-        post['Id']=userId
+        post['userId']=userId
         post['Pimg']=profImg
         return post

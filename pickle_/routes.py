@@ -8,7 +8,7 @@ from flask_mail import Message
 from .exceptions import FileNotFound
 from .UserFollowList import UserJson
 from sqlalchemy import and_,or_,not_
-
+from .PostLikelist import PostJSON
 userJson=UserJson()
 class Themes():
     def __init__(self):
@@ -78,12 +78,12 @@ def profile(id):
         else:
             posts=Post.query.filter_by(user_id=id).order_by(Post.created_at.desc()).all()
             if not  current_user.is_authenticated:
-                return render_template("account/profile.html",user=user,Theme=Theme,followers=userJson.nooffollowers(user.Username),following=userJson.nooffollowings(user.Username),posts=posts)
+                return render_template("account/profile.html",user=user,Theme=Theme,followers=userJson.nooffollowers(user.Username),following=userJson.nooffollowings(user.Username),posts=posts,PostJson=PostJSON)
             else:
                 if int(id)==current_user.Id:
                     return redirect("/account")
                 print(current_user.Id)
-                return render_template("account/profile.html",user=user,Theme=Theme,isFollowed=userJson.checkIfisfollowed(user.Username),followers=userJson.nooffollowers(user.Username),following=userJson.nooffollowings(user.Username),posts=posts)
+                return render_template("account/profile.html",user=user,Theme=Theme,isFollowed=userJson.checkIfisfollowed(user.Username),followers=userJson.nooffollowers(user.Username),following=userJson.nooffollowings(user.Username),posts=posts,PostJson=PostJSON)
 
 #user authentication section
 
@@ -208,7 +208,7 @@ def logout():
 def account():
 
     posts=Post.query.filter_by(user_id=current_user.Id).order_by(Post.created_at.desc()).all()
-    return render_template("account/index.html",title="Account",Theme=Theme,thejson=userJson,forms=postsForm.Posts(),posts=posts)
+    return render_template("account/index.html",title="Account",Theme=Theme,thejson=userJson,forms=postsForm.Posts(),posts=posts,PostJson=PostJSON)
 
 @app.route("/account_post")
 @login_required
@@ -338,7 +338,7 @@ def index():
     followingIds=userJson.get_followings()
     followingIds.append(current_user.Id)
     posts=Post.query.filter(Post.user_id.in_(followingIds) ).order_by(Post.created_at.desc()).all()
-    return render_template('home/index.html',newpost=postsForm.Posts(),posts=posts)
+    return render_template('home/index.html',newpost=postsForm.Posts(),posts=posts,PostJson=PostJSON,theme=Theme)
 
 
 def save_img(Image_data,Title):
@@ -418,17 +418,42 @@ def create_post():
                         user_id=current_user.Id )
         db.session.add(post)
         db.session.commit()
+        print(post.Id)
+        PostJSON.create_postJson(post.Id)
         return redirect("/")
     else:
         flash("You must have messed up try to fill all the section for each type",'danger')
         return redirect("/account")
 
-@app.route("/post/like")
+@app.route("/post/like",methods=['POST'])
 @login_required
 def like_post():
-    return " "
+    postId=request.form.get('id')
+    if postId:
+       print()
+       return PostJSON.Like(postId)
+    
 
-@app.route("/post/unlike")
+    return "-1"
+
+@app.route("/post/unlike",methods=['POST'])
 @login_required
 def unlike_post():
-    return " "
+    postId=request.form.get('id')
+    if postId:
+       print()
+       return PostJSON.Unikes(postId)
+    return "-1"
+
+@app.route("/post/comment",methods=['POST'])
+@login_required
+def add_comment():
+    comments=request.form.get('comment')
+    postId=request.form.get('id')
+    print(postId+comments)
+    if postId:
+        if comments:
+            return PostJSON.addComment(postId,comments)
+        return "2"
+    return "-1"
+    

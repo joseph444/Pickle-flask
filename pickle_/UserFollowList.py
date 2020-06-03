@@ -88,8 +88,6 @@ class UserJson():
         return len(self.data['followers'])
     @property
     def noOFFollowings(self):
-        print(self.data)
         self.data=self.ret_data
-        print(self.data)
         return len(self.data['followings'])
     

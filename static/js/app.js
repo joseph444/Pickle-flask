@@ -312,39 +312,53 @@ $(document).ready(
 );
 
 function Like(id){
-    var likeBtnText=$('#likeTxt').text();
-    var unlikeBtnText=$('#unlikeTxt').text();
-    if(likeBtnText==='Like'){
-        $('#likeTxt').text("Liked");
-    }
-    else if (likeBtnText==='Liked'){
-        $('#likeTxt').text("Like")
-    }
-    sendLikerqst(id);
-    if(unlikeBtnText==='Unliked'){
-        $('#unlikeTxt').text("Unlike");
-        sendunlikerqst(id);
-    }
     
+    sendLikerqst(id);
 }
 function Unlike(id){
-    var likeBtnText=$('#likeTxt').text();
-    var unlikeBtnText=$('#unlikeTxt').text();
-    if(unlikeBtnText==='Unlike'){
-        $('#unlikeTxt').text("Unliked");
-    }
-    else if(unlikeBtnText==='Unliked'){
-        $('#unlikeTxt').text("UnLike");
-    }
-    sendunlikerqst(id);
 
-    if(likeBtnText==='Liked'){
-        $('#likeTxt').text("Like")
-        sendLikerqst(id);
+    sendunlikerqst(id);
+}
+function addComment(id){
+    var comment= $('#add-comment-'+id).val();
+    comment=comment.trim();
+    console.log("Working");
+    
+
+    if(comment===''){
+        $('#comment-'+id).addClass('is-invalid');
+        console.log("Working1");
+        return;
+
     }
+    $.ajax({
+        type: "POST",
+        url: "/post/comment",
+        data: {
+            id:id,
+            comment:comment
+        },
+        success:function (response) {
+            console.log("Working2");
+            var no= parseInt( $('#no-comment-'+id).text());
+           if(response==='added'){
+            $('#no-comment-'+id).text(no+1);
+            $('#add-comment-'+id).val(" ")
+            $('#comment-'+id).hide();
+            alert('Your Comment is Added');
+           }
+           
+           else{
+               var noo=parseInt($('#noofDislikes-'+id).text())
+              
+           }
+            
+        }
+    });
 }
 
 function sendLikerqst(id){
+    
     $.ajax({
         type: "POST",
         url: "/post/like",
@@ -352,13 +366,26 @@ function sendLikerqst(id){
             id:id
         },
         success:function (response) {
-            console.log(response);
+            var no= parseInt( $('#nooflikes-'+id).text());
+           if(response==='added'){
+               
+               $('#nooflikes-'+id).text(no+1);
+           }
+           else if(response==='removed'){
+            $('#nooflikes-'+id).text(no-1);
+           }
+           else{
+               var noo=parseInt($('#noofDislikes-'+id).text())
+               $('#nooflikes-'+id).text(no+1);
+               $('#noofDislikes-'+id).text(noo-1);
+           }
             
         }
     });
 
 }
 function sendunlikerqst(id){
+    console.log(id);
     $.ajax({
         type: "POST",
         url: "/post/unlike",
@@ -366,7 +393,19 @@ function sendunlikerqst(id){
             id:id
         },
         success:function (response) {
-            console.log(response);
+            var no=parseInt($('#noofDislikes-'+id).text());
+            if(response==='added'){
+               
+                $('#noofDislikes-'+id).text(no+1);
+            }
+            else if(response==='removed'){
+             $('#noofDislikes-'+id).text(no-1);
+            }
+            else{
+                var noo=parseInt($('#nooflikes').text())
+                $('#noofDislikes-'+id).text(no+1);
+                $('#nooflikes-'+id).text(noo-1);
+            }
             
         }
     });

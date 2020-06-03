@@ -1,9 +1,10 @@
+{%if current_user.is_authenticated%}
 {%for post in posts%}
 {%set Post=post.get_Post()%}
-{%set postId=Post['id']%}
-<article class='card my-3' >
+{%set postId=Post['id'] %}
+<article class='card my-3 hoverable' >
     <div class="card-header">
-        <a href="/profile/{{Post['Id']}}" class=" text-dark" style="text-decoration: none;">
+        <a href="/profile/{{Post['userId']}}" class=" text-dark" style="text-decoration: none;">
             <img src="{{resized_img_src(Post['Pimg'],width=60,height=60,mode='crop',quality=100)}}" style='border-radius:50%;background-color:#4f4f4f' alt="user picture">
             <span> {{Post['Username']}}</span>
             <span class="float-right">{{Post['created_at']}}</span>
@@ -67,20 +68,42 @@
     </div>
     <div class="list-group list-group-flush p-0">
         <div class="list-group-item">
-            <div class="c_row ">
-                <div class="c_col hoverable btn btn-primary" onclick="Like(1)">
-                    <span><i class="fa fa-thumbs-up" aria-hidden="true"></i></span>
-                    <span id='likeTxt'>Like</span>
+            <div class="container text-center">
+                <div  style="text-decoration: none;">
+                   <button style="font-size:x-large" class="mx-2 p-2 btn" onclick="Like('{{postId}}')">
+                       <i class="fa fa-thumbs-up text-primary" aria-hidden="true"></i>
+                      <div class="badge" id='nooflikes-{{postId}}'> {{PostJson.getNoofLikes(postId)['nooflikes']}}</div>
+                   </button>
+                   <button style="font-size:x-large" class="mx-2 p-2 btn" onclick="Unlike('{{postId}}')">
+                       <i class="fa fa-thumbs-down text-danger" aria-hidden="true"></i>
+                       <div class="badge" id='noofDislikes-{{postId}}'> {{PostJson.getNoofDislikes(postId)['nooflikes']}}</div>
+                   </button>
+                   <span  class="mx-2 p-2 btn">
+                    <button class="btn" style="font-size:x-large" onclick="$('#comment-{{postId}}').toggle()">
+                        <i class="fa fa-pencil-square-o text-dark" aria-hidden="true"></i>
+                        <div class="badge" id='no-comment-{{postId}}'> {{PostJson.getNoofComments(postId)['nooflikes']}}</div>
+                    </button>
+                   </span>
                 </div>
-                <div class="c_col hoverable btn-danger" onclick="Unlike(1)">
-                    <span><i class="fa fa-thumbs-down" aria-hidden="true"></i></span>
-                    <span id='unlikeTxt'>Unlike</span>
-                </div>
-                
             </div>
            
+        </div>
+        <div class="list-group-item hidden" id="comment-{{postId}}">
+            <div class="container container-fluid ">
+                <div class="form-inline">
+                    <input type="text" name="comment" id="add-comment-{{postId}}" class="add-comment form-control form-control-lg mx-2" style="width: 80%;height:2.3rem!important;background-color:#818181" placeholder="Add Comment">
+                    <span><button class="btn btn-dark" onclick="addComment('{{postId}}')"> <i class="fa fa-paper-plane" aria-hidden="true"></i> </button></span>
+                </div>
+            </div>
         </div>
         
     </div>
 </article>
 {%endfor%}
+{%else%}
+<div class="container justify-content-center row">
+    <div class="col">
+        <h1 class="display-1">Login To see the Posts</h1>
+    </div>
+</div>
+{%endif%}
