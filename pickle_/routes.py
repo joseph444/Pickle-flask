@@ -1,6 +1,5 @@
-from flask import render_template,redirect,request,flash
-from pickle_ import app,bcrypt,mail,imagekit,images
-from . import home
+from flask import render_template,redirect,request,flash,abort
+from pickle_ import app,bcrypt,mail,imagekit,images,socketio
 from .form import authentication,postsForm
 from .models.user import User,Post,db
 from flask_login import login_user,current_user,logout_user,login_required
@@ -9,22 +8,21 @@ from .exceptions import FileNotFound
 from .UserFollowList import UserJson
 from sqlalchemy import and_,or_,not_
 from .PostLikelist import PostJSON
+from .FireBaseAdmin import chatApp,UserMessage
 userJson=UserJson()
 class Themes():
     def __init__(self):
         self.themes={
-                
-                'Original':'nevablue',
-                'Spicy':'spicy-',
-                'Veggies':'veg-',
-                'Fruity':'fruits-',
-                'Chilled':'cold-',
-                'Candy':'candy-',
-                'Chocolate':'choco-',
-                'Bread and Butter':'bread-',
-                'Popsickle':'pop-',
-                'Sushi':'rice-',
-                
+            'Original':'Original',
+            'Spicy':'Spicy',
+            'Veggies':'Veggies',
+            'Fruity':'Fruity',
+            'Chilled':'Chilled',
+            'Candy':'Candy',
+            'Chocolate':'Chocolate',
+            'Bread and Butter':'Bread-and-Butter',
+            'Popsickle':'Popsickle',
+            'Sushi':'Sushi'   
             }
     
     def get_theme(self,key):
@@ -39,7 +37,6 @@ Theme=Themes()
 #normal pages which can be seen without logging in
 
 
-
 @app.route("/search",methods=['POST','GET'])
 def search():
 
@@ -52,13 +49,14 @@ def search():
                 str(searchValue).replace("%","'%'")
             query="%{}%".format(searchValue)
             searchResult=dict()
-            listofusers=User.query.filter(User.Username.like(query)).all()
+            listofusers=User.query.filter(User.Username.like(query)).order_by(User.Id.desc()).all()
             i=0
             for user in listofusers:
                 searchResult[i]=user.ret_dict_of_values()
                 i+=1
+            
         return searchResult
-    return home.view.search()
+    return render_template("home/search.html",title='Search',Theme=Theme)
 
 
 @app.route("/profile/")
@@ -84,6 +82,29 @@ def profile(id):
                     return redirect("/account")
                 print(current_user.Id)
                 return render_template("account/profile.html",user=user,Theme=Theme,isFollowed=userJson.checkIfisfollowed(user.Username),followers=userJson.nooffollowers(user.Username),following=userJson.nooffollowings(user.Username),posts=posts,PostJson=PostJSON)
+
+@app.route("/post/<id>")
+@login_required
+def show_post(id):
+    post=Post.query.get(id)
+    if not post:
+        return redirect("/")
+    post=post.get_Post()
+    nlikes=PostJSON.getNoofLikes(id)
+    ndislikes=PostJSON.getNoofDislikes(id)
+    ncomment=PostJSON.getNoofComments(id)
+    likeList=PostJSON.getLikeList(id)
+    dislikeList=PostJSON.getDislikeList(id)
+    comments=PostJSON.getComments(id)
+    Response=dict()
+    Response['post']=post
+    Response['nlikes']=nlikes
+    Response['ndislikes']=ndislikes
+    Response['ncomments']=ncomment
+    Response['likes']=likeList
+    Response['dislikes']=dislikeList
+    Response['comments']=comments
+    return render_template("posts/seeThePost.html",post=Response,Theme=Theme)
 
 #user authentication section
 
@@ -118,7 +139,7 @@ def register():
         form=authentication.Register()
         if form.validate_on_submit():
             hs_password=bcrypt.generate_password_hash(form.password.data).decode("utf-8")
-            user=User(Username=form.username.data,Email=form.email.data,Password=hs_password,Friends="")
+            user=User(Username=form.username.data.strip(),Email=form.email.data.strip(),Password=hs_password,Friends="")
             db.session.add(user)
             db.session.commit()
             url=request.base_url
@@ -208,7 +229,7 @@ def logout():
 def account():
 
     posts=Post.query.filter_by(user_id=current_user.Id).order_by(Post.created_at.desc()).all()
-    return render_template("account/index.html",title="Account",Theme=Theme,thejson=userJson,forms=postsForm.Posts(),posts=posts,PostJson=PostJSON)
+    return render_template("account/index.html",title="Account",Theme=Theme,theme=Theme,thejson=userJson,forms=postsForm.Posts(),posts=posts,PostJson=PostJSON)
 
 @app.route("/account_post")
 @login_required
@@ -453,7 +474,114 @@ def add_comment():
     print(postId+comments)
     if postId:
         if comments:
-            return PostJSON.addComment(postId,comments)
-        return "2"
+            if PostJSON.addComment(postId,comments)=='added':
+                comments=PostJSON.getComments(postId)
+                return comments
+            else:
+                return "-3"
+        return "-2"
     return "-1"
+
+@app.route("/post/comment/delete",methods=['POST'])
+def delete_comment():
+    postid=request.form.get('id')
+    try:
+        key=int(request.form.get('comid'))
+    except Exception as e:
+        print(e)
+        return "error"
+    if postid:
+        if key:
+            if PostJSON.deleteComment(postid,key):
+                comments=PostJSON.getComments(postid)
+                return comments
+            else:
+                return "error"
+        else:
+            return "error"
+    else:
+        return "error"
+
+
+@app.route("/get_current_user")
+@login_required
+def get_current_user():
+    try:
+        return "{}".format(current_user.Id)
+    except:
+        return "-1"
+
+
+@app.route("/post/delete",methods=['POST'])
+@login_required
+def delete_post():
+    id=request.form.get('id')
+    post=Post.query.get(id)
+    userid=post.user_id
+    if userid==current_user.Id:
+        image_ids=post.Image_id.split("|")[:-1]
+        if len(image_ids)>0:
+            response=imagekit.bulk_file_delete(image_ids)
+        db.session.delete(post)
+        db.session.commit()
+        return PostJSON.deleteJson(id)
+    else:
+        return "error"
     
+
+@app.route("/post/comment/update",methods=['POST'])    
+@login_required
+def update_comment():
+    id=request.form.get('id')
+    comid=request.form.get('comid')
+    comment=request.form.get('comment')
+    if id:
+        if comid:
+            if comment:
+                print(comid)
+                if PostJSON.updateComment(id,int(comid),comment):
+                    return PostJSON.getComments(id)
+    return "error"
+
+@app.route("/pinned")
+@login_required
+def pinned():
+    list_of_pinned_post=userJson.getPinned()
+    print(" the list of values{}".format(list_of_pinned_post))
+    posts=Post.query.filter(Post.Id.in_(list_of_pinned_post) ).order_by(Post.created_at.desc()).all()
+    return render_template('posts/Pinned.html',posts=posts,PostJson=PostJSON,Theme=Theme)
+    return " "
+
+
+@app.route("/pinned/add",methods=['POST'])
+@login_required
+def add_pinned():
+    id=request.form.get('id')
+    print(id)
+    if id:
+        return userJson.addPinned(id)
+    return "error"
+
+
+@app.route("/chats")
+@login_required
+def chatData():
+    response=dict()
+    l=userJson.getAllChats()
+    for i in l:
+        response[i]=User.query.get(i).ret_dict_of_values()
+    return response
+
+@app.route("/message")
+@login_required
+def messageList():
+    response=dict()
+    l=userJson.getAllChats()
+    for i in l:
+        response[i]=User.query.get(i).ret_dict_of_values()
+    return render_template('messanger/index.html',msg=response,json=userJson,user=User)
+
+@app.route("/message/<id>")
+@login_required
+def message(id):
+    return render_template('messanger/chat.html')

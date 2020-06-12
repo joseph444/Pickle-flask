@@ -17,13 +17,18 @@
 <link rel="stylesheet" href="{{url_for('static',filename='plugins/glider/glider.min.css')}}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="{{url_for('static', filename='css/app.css')}}">
-<link rel="stylesheet" href="{{url_for('static', filename='css/colors.css')}}">
+
+<link rel="stylesheet" href="{{url_for('static', filename='css/color.css')}}">
 <link rel="stylesheet" href="{{url_for('static', filename='css/fonts.css')}}">
 
 <link rel="shortcut icon" href="{{ url_for('static',filename='photos/icon.ico') }}" type="image/x-icon">
 <script src="{{ url_for('static',filename='plugins/jquery/jquery.min.js') }}"></script>
 <script src="{{url_for('static', filename='plugins/bootstrap/bootstrap.min.js')}}"></script>
 <script src="{{url_for('static',filename='plugins/glider/glider.min.js')}}"></script>
+<script src="{{url_for('static',filename='plugins/scrollmagic/ScrollMagic.min.js')}}"></script>
+{%if current_user.is_authenticated%}
+<script src="{{url_for('static',filename='plugins/socketio/socket.io.js')}}"></script>
+{%endif%}
 <script src="{{url_for('static',filename='js/app.js')}}"></script>
 </head>
 

@@ -18,6 +18,8 @@
             </a>
                 <div class="dropdown-menu mt-0" aria-labelledby="triggerId" id="menu1" onmouseover="$(this).show()" onmouseout="$(this).hide()">
                     <a href="#" class="dropdown-item " ><i class="fa fa-cog" aria-hidden="true"></i>Settings</a>
+                    <a href="/message" class="dropdown-item "> <i class="fa fa-envelope-open" aria-hidden="true"></i> Messages</a>
+                    <a class="dropdown-item" href="/pinned"><i class="fa fa-thumb-tack" aria-hidden="true"></i> Pinned Posts</a>
                     <a class="dropdown-item " href="/account"><i class="fa fa-user-o" aria-hidden="true"></i> Account</a>
                     <a class="dropdown-item " href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</a>
                 </div>
@@ -46,20 +48,26 @@
         <div class="navbar-collapse offcanvas-collapse black-tb" style="z-index: 9999999999;">
             <ul class="navbar-nav mr-auto ">
                 <li class="nav-item hoverable">
-                    <a class="nav-link text-white p-3" href="/">Home </a>
+                    <a class="nav-link text-white p-3" href="/"> <span><i class="fa fa-users" aria-hidden="true"></i></span> Home </a>
                     
                 </li>
                 <li class="nav-item hoverable p-3">
-                    <a class=" nav-item nav-link text-white" href="/search" >Search </a>
+                    <a class=" nav-item nav-link text-white" href="/search" > <span> <i class="fa fa-search" aria-hidden="true"></i> </span> Search </a>
                 </li>
                 {% if current_user.is_authenticated%}
-                
                 <li class="nav-item hoverable p-3">
-                    <a href="/account" class="nav-link text-white ">Account</a>
+                    <a href="/message" class="nav-link text-white"> <i class="fa fa-envelope-open" aria-hidden="true"></i> Messages</a>
+                </li>
+                 <li class="nav-item hoverable p-3">
+                    <a class="nav-link text-white " href="/pinned"><i class="fa fa-thumb-tack" aria-hidden="true"></i> Pinned Posts</a>
+                </li>
+
+                <li class="nav-item hoverable p-3">
+                    <a href="/account" class="nav-link text-white "> <i class="fa fa-user-o" aria-hidden="true"></i> Account</a>
                 </li>
                 
                 <li class="nav-item hoverable p-3">
-                    <a href="/logout" class="nav-link text-white ">Logout</a>
+                    <a href="/logout" class="nav-link text-white "><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
                 </li>
                 {% else %}
                 <li class="nav-item hoverable p-3">

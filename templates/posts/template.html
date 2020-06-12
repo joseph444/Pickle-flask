@@ -1,14 +1,24 @@
 {%if current_user.is_authenticated%}
+{%set i={'value':False} %}
 {%for post in posts%}
+{%if i.update({'value':True})%}
+{%endif%}
 {%set Post=post.get_Post()%}
 {%set postId=Post['id'] %}
 <article class='card my-3 hoverable' >
-    <div class="card-header">
-        <a href="/profile/{{Post['userId']}}" class=" text-dark" style="text-decoration: none;">
-            <img src="{{resized_img_src(Post['Pimg'],width=60,height=60,mode='crop',quality=100)}}" style='border-radius:50%;background-color:#4f4f4f' alt="user picture">
-            <span> {{Post['Username']}}</span>
-            <span class="float-right">{{Post['created_at']}}</span>
+    <div class="card-header text-center" >
+        {%if Post['userId']!=current_user.Id%}
+        <a href="/profile/{{Post['userId']}}" class=" text-dark " style="text-decoration: none;">
+            <img src="{{resized_img_src(Post['Pimg'],width=60,height=60,mode='crop',quality=100)}}" style='border-radius:50%;background-color:#4f4f4f' alt="user picture" class="float-left">
+           
         </a>
+        <span class="float-right"> <button class="btn" onclick="pin('{{postId}}')"> <i class="fa fa-thumb-tack" aria-hidden="true"></i> </button> </span>
+        {%else%}
+        <div class="mx-auto btn-group float-right">
+            <button class="btn btn-danger" onclick="DelPost('{{postId}}')"> <i class="fa fa-trash" aria-hidden="true"></i> Delete Post </button>
+            <button class="btn" onclick="pin('{{postId}}')"> <i class="fa fa-thumb-tack" aria-hidden="true"></i> </button>
+        </div>
+        {%endif%}
     </div>
     {%if Post['Img']%}
     <div class="glider-contain">
@@ -22,7 +32,7 @@
         
     </div>
     {%endif%}
-    <div class="card-body">
+    <div class="card-body" onclick="location.replace('/post/{{postId}}')">
         <div class="text-center">
             <div class="" onclick="location.replace('/post/{{postId}}')">
                 <h2>{{Post['Title']}}</h2><hr>
@@ -100,6 +110,11 @@
     </div>
 </article>
 {%endfor%}
+{%if not i['value']%}
+<h1 class="text-center display-4">
+    No Posts Yet
+</h1>
+{%endif%}
 {%else%}
 <div class="container justify-content-center row">
     <div class="col">

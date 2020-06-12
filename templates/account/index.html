@@ -1,18 +1,17 @@
 {% extends 'app.html'%}
-
-{%block main%}
-
 {% set username=current_user.Username%}
 {%set email= current_user.Email%} 
 {%set Pimg=current_user.Profile_img  %}
 {%set theme=current_user.theme%}
 {%set themeclass=Theme.get_theme(current_user.theme)%}
-
 {% set description=current_user.Description%}
 {%set userJson=thejson%}
-{%set defaultTheme= theme in ['Original']%}
 {%set FriendIdarray=current_user.Friends.split(',')%}
 {%set NoofFriends=(FriendIdarray|length)-1%}
+{%set bg=themeclass+"-body" %}
+
+{%block main%}
+
 
 {#The Spinner#}
 
@@ -68,11 +67,7 @@
 <div class="modal fade" id="ProfImg" tabindex="-1" role="dialog" aria-labelledby="ChangeImage" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            {%if defaultTheme  %}
-                <div class="modal-header {{themeclass}}">
-            {%else%}
-                 <div class="modal-header {{themeclass}}rl">
-            {%endif%}     
+        <div class="modal-header {{themeclass}}">
             {% with messages=get_flashed_messages(with_categories=True)%}
             {% if messages%}
                 {% for category,message in messages%}
@@ -333,12 +328,8 @@
 
 
 <div class="row p-3m">
-    <div class="col-lg-3 desktop ">
-        {%if defaultTheme%}
+    <div class="col-lg-3 desktop ">     
         <div class="card {{themeclass}} no-overflow">
-        {%else%}
-        <div class="card {{themeclass}}rl no-overflow">
-        {%endif%}
             <div class="card-body row ">
                 
                 <div class="col p-0 justify-content-center" style="width: min-content;">
@@ -349,11 +340,11 @@
                     </div>
                 </div>
                 <div class="col text-left ">
-                    <fieldset class="username-side font-2">{{username}}</fieldset>
+                    <fieldset class="username-side font-2" style="font-size: 22px!important;">{{username}}</fieldset>
                     <fieldset class="email-side">{{email}}</fieldset>
                 </div>
             </div>
-            <ul class="list-group list-group-flush">
+            <ul class="list-group list-group-flush bg-white text-dark">
                 <li class="list-group-item">
                     <div class="container text-center">
                         <h5>Your Current theme :</h5>
@@ -371,7 +362,7 @@
                         <h2>
                           <span id="Followers"> Followers: {{userJson.noOFFollowers}}</span>
                             <br>
-                            <span id="Followings">Following: {{userJson.noOFFollowings}}</span>  
+                            <span id="Followings">Followings: {{userJson.noOFFollowings}}</span>  
                         </h2>
                     </div>
                 </li>
@@ -380,14 +371,11 @@
         </div>
     </div>
     <div class="col-xl-9">
-        {%if defaultTheme%}
+       
         <div class="container container-fluid m-0 {{themeclass}} border theme-ground">
-        {%else%}
-        <div class="container container-fluid m-0 {{themeclass}}rl border theme-ground">
-        {%endif%}
         <div class=""><h3 class="username-name display-4 ">{{username}}</h3></div>
         </div>
-        <div class="container container-fluid m-0 border p-4m " style="padding-bottom: 0!important;">
+        <div class="container container-fluid m-0 border p-4m bg-white text-dark" style="padding-bottom: 0!important;">
            <div class="position-absolute-profile">
                <div class="profile-img-main">
                 <a href="#ProfImg" type="button" data-toggle="modal">
@@ -442,15 +430,11 @@
     </div>
     <div class="col-xl-3"></div>
     <div class="col-xl-6  p-3">
-        {%if defaultTheme%}
         <div class="container container-fluid border rounded  {{themeclass}}" >
-        {%else%}
-        <div class="container container-fluid border rounded {{themeclass}}tb" >
-        {%endif%}
         <h1 class="text-center text-dark py-3" id="content_head">
             Your Tasty Recipies and Memories are here
         </h1>
-        <hr class="border" style="border-color: black!important;"> 
+        
         </div>
         <div class="container  border" id="contentHolder">
             {%include 'posts/template.html'%}
@@ -591,10 +575,8 @@ $(document).ready(
        
     }
 );
-function MyPosts(){
-    $("#content_head").text("Your Tasty Recipies and Memories are here");
-   }
 
+  
     
 </script>
   

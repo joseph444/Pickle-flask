@@ -75,7 +75,7 @@ class Postjson():
                 msg=msg+'removed'
             except:
                 pass
-        print(data)
+        
         self.__save_json(data,id)
         return msg
         
@@ -88,39 +88,38 @@ class Postjson():
         time=datetime.datetime.now()
         time=time.strftime("%m/%d/%Y, %H:%M:%S")
         data['Comment'].append({'user_id':current_user.Id,'comment':comment,'time':time})
-        print(data['Comment'])
+       
         self.__save_json(data,id)
         return msg
     
-    def deleteComment(self,id,comment,time,usrid):
+    def deleteComment(self,id,comid):
         try:
             data=self.__ret_post(id)
         except Exception as e:
             return str(e)
-        required=dict()
-        required['user_id']=userid
-        required['comment']=comment
-        required['time']=time
-        try:
-            data['Comment'].remove(required)
-        except:
-            return {"error":'Data Not Found'}
-        
-        self.__save_json(data,id)
-        return "Deleted"
+        comid*=-1
+        print(comid)
+        Comment_required=data['Comment'][int(comid)]
+        if Comment_required['user_id']==current_user.Id:
+            data['Comment'].pop(int(comid))
+            self.__save_json(data,id)
+            return True
+        return False
     
     def getComments(self, id):
         try:
             data=self.__ret_post(id)
         except Exception as e:
+            print(e)
             return None
         response=dict()
         i=0
-        for comments in data['Comments']:
+        data['Comment']=data['Comment'][::-1]
+        for comments in data['Comment']:
             userId=comments['user_id']
             comment=comments['comment']
-            time=comments['time'].date()
-            user=User.query.get(userId).first()
+            time=comments['time']
+            user=User.query.get(userId)
             userDt=user.ret_dict_of_values()
             R=dict()
             R['user']=userDt
@@ -161,9 +160,13 @@ class Postjson():
             return {"error":e}
         response=dict()
         i=0
+        data['Likes']=data['Likes'][::-1]
         for ids in data['Likes']:
-            post=Post.query.get(ids).first()
-            response[i]=post.ret_dict_of_values()
+            
+
+            users=User.query.get(ids)
+            response[i]=users.ret_dict_of_values()
+            i+=1
         return response
         pass
     def getDislikeList(self,id):
@@ -173,11 +176,34 @@ class Postjson():
             return {"error":e}
         response=dict()
         i=0
+        data['Unlikes']=data['Unlikes'][::-1]
         for ids in data['Unlikes']:
-            post=Post.query.get(ids).first()
-            response[i]=post.ret_dict_of_values()
+            users=User.query.get(ids)
+            response[i]=users.ret_dict_of_values()
+            i+=1
         return response
-
+    def deleteJson(self,id):
+        try:
+            data=self.__path__(id)
+            os.remove(data)
+            return "done"
+        except Exception as e:
+            print(e)
+            return "error"
+    def updateComment(self,id,comid,comment):
+        try:
+            data=self.__ret_post(id)
+        except Exception as e:
+            return str(e)
+        comid*=-1
+        print(comid)
+        Comment_required=data['Comment'][int(comid)]
+        if Comment_required['user_id']==current_user.Id:
+            data['Comment'][int(comid)]['comment']=comment
+            self.__save_json(data,id)
+            return True
+        return False
+        pass   
 
 
 PostJSON=Postjson()

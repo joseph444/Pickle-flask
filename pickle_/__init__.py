@@ -4,6 +4,7 @@ from flask_login import LoginManager
 from imagekitio.client import ImageKit
 from flask_mail import Mail
 from flask_images import Images
+from flask_socketio import SocketIO
 app=Flask(__name__,template_folder="../templates",static_folder='../static')
 
 #configuration of The WEBAPP
@@ -23,11 +24,14 @@ bcrypt=Bcrypt(app)
 login=LoginManager(app)
 mail=Mail(app)
 images=Images(app)
+socketio=SocketIO(app)
+
 
 login.login_view="Login"
 login.login_message_category="warning"
 imagekit=ImageKit(public_key="public_F+8WfSJd5QAX4Jy62hcF6qYNg1A=",private_key="private_VMjHrVPRL1p5AYFG4ROtMyMM9K8=",url_endpoint="https://ik.imagekit.io/Pickle/")
 from . import routes
+from . import socketEvents
 
 
 

@@ -1,14 +1,15 @@
 {% extends 'app.html'%}
-
+{%set theme=user['theme']%}
+{%set themeclass=Theme.get_theme(theme)%}
+{%set bg=themeclass+"-body"%}
 {%block main%}
 {%set Id=user['Id']%}
 {% set username=user['Username']%}
 {%set Pimg=user['Profile_img']  %}
-{%set theme=user['theme']%}
-{%set themeclass=Theme.get_theme(theme)%}
+
 
 {% set description=user['Description']%}
-{%if (description|length)<2%}
+{%if description%}
 {%set description="...Nothing to Show..."%}
 {%set des=False%}
 {%elif description == None%}
@@ -48,11 +49,9 @@
 <div class="modal fade" id="ProfImg" tabindex="-1" role="dialog" aria-labelledby="ChangeImage" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            {%if defaultTheme  %}
+           
                 <div class="modal-header {{themeclass}}">
-            {%else%}
-                 <div class="modal-header {{themeclass}}rl">
-            {%endif%}     
+               
             {% with messages=get_flashed_messages(with_categories=True)%}
             {% if messages%}
                 {% for category,message in messages%}
@@ -93,11 +92,9 @@
 
 <div class="row p-3m">
     <div class="col-lg-3 desktop">
-        {%if defaultTheme%}
-        <div class="card {{themeclass}} no-overflow">
-        {%else%}
-        <div class="card {{themeclass}}rl no-overflow">
-        {%endif%}
+        
+        <div class="card {{themeclass}} no-overflow text-dark">
+        
             <div class="card-body row ">
                 
                 <div class="col p-0 justify-content-center" style="width: min-content;">
@@ -136,14 +133,12 @@
         </div>
     </div>
     <div class="col-xl-9">
-        {%if defaultTheme%}
+       
         <div class="container container-fluid m-0 {{themeclass}} border theme-ground">
-        {%else%}
-        <div class="container container-fluid m-0 {{themeclass}}rl border theme-ground">
-        {%endif%}
+        
         <div class=""><h3 class="username-name display-4 ">{{username}}</h3></div>
         </div>
-        <div class="container container-fluid m-0 border p-4m">
+        <div class="container container-fluid m-0 border p-4m bg-white border">
            <div class="position-absolute-profile">
                <div class="profile-img-main">
                 <a href="#ProfImg" type="button" data-toggle="modal">
@@ -183,7 +178,7 @@
         <div class="create-post-box py-3">
             <div class="group-btn text-center pt-lg-3 " >
                 {%if current_user.is_authenticated%}
-                <button  class="btn btn-warning" ><span><i class="fa fa-envelope-open" aria-hidden="true"></i></span> Messages {{username}}</button>
+                <a href="/message/{{username}}" class="btn btn-warning" ><span><i class="fa fa-envelope-open" aria-hidden="true"></i></span> Messages {{username}}</a>
                 {%if Followed%} 
                     <button  class="btn btn-success" id='followthisuser'> <span><i class="fa fa-users" aria-hidden="true"></i></span> Unfollow</button>
                 {%else%}
@@ -200,11 +195,9 @@
     </div>
     <div class="col-xl-3"></div>
     <div class="col-xl-6  ">
-        {%if defaultTheme%}
+        
         <div class="container container-fluid border rounded  {{themeclass}}" >
-        {%else%}
-        <div class="container container-fluid border rounded {{themeclass}}tb" >
-        {%endif%}
+        
         <h1 class="text-center text-dark py-3" id="content_head">
             Your Tasty Recipies and Memories are here
         </h1>

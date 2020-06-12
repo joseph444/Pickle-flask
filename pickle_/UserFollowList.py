@@ -9,7 +9,6 @@ class UserJson():
     
     def get_json(self,username):
         path=os.getcwd()
-        print('{}/pickle_/JSON/{}.json'.format(path,username))
         thejson=open('{}/pickle_/JSON/{}.json'.format(path,username))  
         self.data=json.load(thejson)
         thejson.close()
@@ -25,6 +24,8 @@ class UserJson():
         self.data['followers']=[]
         self.data['followings']=[]
         self.data['blocked']=[]
+        self.data['pinned']=[]
+        self.data['chats']=[]
         path=os.getcwd()
         with open('{}/pickle_/JSON/{}.json'.format(path,username),'w') as thejson:
             json.dump(self.data,thejson)
@@ -74,6 +75,68 @@ class UserJson():
     def get_followings(self):
         xjson=self.ret_data
         return xjson['followings']
+    
+    def getAllChats(self):
+        xjson=self.ret_data
+        return xjson['chats']
+    
+    def addChats(self,id):
+        xjson=self.ret_data
+        if xjson['chats'].count(id)>0:
+            self.realignChats(id)
+        else:
+            xjson['chats'].append(id)
+        username=user.User.query.get(id).Username
+        self._create_json(xjson,current_user.Username)
+        CJSON=self.get_json(username)
+        if CJSON['chats'].count(current_user.Id)>0:
+            try:
+                CJSON['chats'].remove(current_user.Id)
+            except:
+                pass
+        CJSON['chats'].append(current_user.Id)
+        self._create_json(CJSON,username)
+        print(CJSON)
+    
+    def removeChat(self,id):
+        xjson=self.ret_data
+        if xjson['chats'].count(id)==0:
+            return
+        xjson['chats'].remove(id)
+        
+        self._create_json(xjson,current_user.Username)
+    
+    def realignChats(self,id):
+        xjson=self.ret_data
+        try:
+            xjson['chats'].remove(id)
+        except:
+            print("Except")
+            pass
+        xjson['chats'].insert(0,id)
+        self._create_json(xjson,current_user.Username)
+        return xjson['chats']
+    def addPinned(self,postid):
+        data=self.ret_data
+        username=current_user.Username
+        msg=''
+        print(data)
+        try:
+                data['pinned'].remove(int(postid))
+                msg='remove'
+        except:
+                 
+                 data['pinned'].append(int(postid))
+                 print("Except")
+                 msg='added'
+                 pass
+            #added Followers
+        self._create_json(data,username=username)
+        return msg
+    def getPinned(self):
+        data=self.ret_data
+        
+        return data['pinned']
 
     @property
     def ret_data(self):

@@ -1,0 +1,113 @@
+{%extends 'app.html'%}
+
+{%block main%}
+
+<div class="row ">
+    <div class="col-lg-8" style="overflow-x: hidden;" >
+        <img src="{{url_for('static',filename='photos/msg.jpg')}}" alt="" height="100%" width="100%">
+    </div>
+    <div class="col-lg-4"  >
+        <div class="container border w-100 py-1 btn-group">
+            <a href="/search" class="btn btn-primary"> <i class="fa fa-plus" aria-hidden="true"></i> Add A Chat </a>
+        </div>
+        <div id="list_of_msgs">
+
+        </div>
+        
+    </div>
+</div>
+
+
+<script>
+    
+    function GetAllChats(){
+        var obj={};
+        {%for k in json.getAllChats()%}
+            obj[{{k}}]={{user.query.get(k).ret_dict_of_values()|tojson}};
+        {%endfor%}
+        return obj;
+    }
+    
+    
+   function changeListOfMessages(chats){
+    $('#list_of_msgs').html("")
+    console.log(chats);
+        for(var k in chats){
+            console.log(k);
+            id=chats[k]['Id'];
+            username=chats[k]['Username'];
+            Pimg=chats[k]['Pimg'];
+            Theme=chats[k]['Theme'];
+            
+            template=`<div class="media rounded my-2 {theme} p-2" onclick='location.replace("/message/{username}")'><a class="d-flex" href="/message/{id}"><img class="" src="{pimg}"  style="object-fit: cover!important;border-radius:50%;background-color:#414141;width:6rem;height:6rem"></a><div class="media-body mx-3"><h5 class="my-4">{username}</h5><h6 id='new Msg'></h6></div></div>`;
+            template=template.replace('{theme}',Theme);
+            template=template.replace('{id}',username);
+            template=template.replace('{pimg}',Pimg);
+            template=template.replace('{username}',username);
+            template=template.replace('{username}',username);
+            if(navigator.userAgent.indexOf("Chrome") > -1){
+                $("#list_of_msgs").prepend(template);
+            }
+            else{
+                $("#list_of_msgs").prepend(template)
+            }
+            
+        }
+    }
+    var Chats=GetAllChats();
+    changeListOfMessages(Chats);
+    /*
+    var socket = io();
+    var RoomId;
+    var user_list;
+    function eventX(){
+        var msg=$('#message').val()
+        console.log(msg);
+        socket.emit('message',{room:RoomId,message:msg});
+        $('.messages').append('<p >'+msg+'</p>');
+    }list_of_msgs
+
+    socket.on('recvmsg',function(data){
+        var id=data['id'];
+        var username=data['un'];
+        if(id==RoomId){
+            $('.message').append('<p>'+data['data']+'</p>');
+        }
+        else{
+            alert('You have a message From '+username);
+        }
+        
+    })
+    function setRoomId(id){
+        if(id!=RoomId){
+            if(RoomId){
+                socket.emit('leave',{room:RoomId});
+            }
+            $('.messages').html('');
+            $('.message').html('');
+        RoomId=id;
+        socket.emit('openChat',{id:id});
+        socket.on('opened',function(data){
+            Messages=data['data'];
+            $('.messages').html('');
+            $('.message').html('');
+           
+            for (var k in Messages){
+                if(Messages[k]['id']===CUID){
+                    var msg=Messages[k]['msg'];
+                    $('.messages').append('<p >'+msg+'</p>');
+                }
+                else{
+                    var msg=Messages[k]['msg'];
+                    $('.message').append('<p>'+msg+'</p>')
+                }
+            }
+        });
+        }
+        
+    }*/
+    
+    
+</script>
+
+{%endblock%}

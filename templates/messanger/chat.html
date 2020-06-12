@@ -1,0 +1,94 @@
+{%extends 'app.html'%}
+{%block main%}
+
+<div class="row container justify-content-center">
+    <div class="col-lg-4"></div>
+    <div class="col-lg-6">
+        <div class="container">
+            <a href="/message" class="btn primary text-center">
+            <i class="fa fa-backward" aria-hidden="true"></i>Return To Your Messages
+            </a>
+        </div>
+        <div class="chat-box border">
+            <div class="tmp">
+                <div class="spinner-grow text-muted"></div>
+<div class="spinner-grow text-primary"></div>
+<div class="spinner-grow text-success"></div>
+<div class="spinner-grow text-info"></div>
+<div class="spinner-grow text-warning"></div>
+<div class="spinner-grow text-danger"></div>
+<div class="spinner-grow text-secondary"></div>
+<div class="spinner-grow text-dark"></div>
+<div class="spinner-grow text-light"></div>
+            </div>
+        </div>
+        <div class="message-box">
+            <input type="text" name="" id="msg-input" class="form-control impt" placeholder="enter your message">
+            <button class="btn btn-dark snd ml-lg-5" id='send'> <i class="fa fa-paper-plane" aria-hidden="true"></i> </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var roomId=location.pathname.split('/').slice(-1).toString();
+
+    $(document).ready(
+        function(){
+            socketio.emit('openChat',{id:roomId});
+            socketio.on('opened',function(data){
+                $('.chat-box').html("");
+               data=data['data'];
+               
+               var i=true;
+                for(var k in data){
+                   i=false;
+                   console.log(data[k]['id']===CUID);
+                   if(data[k]['id']===CUID){
+                       var template="<div class='sender'>"+data[k]['msg']+"</div>";
+                   } 
+                   else{
+                       var template="<div class='reciever'>"+data[k]['msg']+"</div>";
+                   }
+                   $('.chat-box').prepend(template);
+                }
+                
+                
+            });
+            socketio.on('recvmsg', function (param){
+                var msg=param['data'];
+                var id=param['id'];
+                if(id==roomId){
+                    var template="<div class='reciever'>"+msg+"</div>";
+                $('.chat-box').prepend(template);
+                $('.chat-box').scrollTop(100)
+                }
+                alert("You have new message from "+param['un']);
+            });
+            $('#msg-input').keyup(function(e){
+                if(e.which==13){
+                    $("#send").click();
+                }
+            });
+            $("#send").click(function(){
+                var msg=$('#msg-input').val();
+                msg=msg.trim();
+                if(msg==''){
+                    return;
+                }
+                else{
+                    data={
+                        room:roomId,
+                        message:msg
+                    };
+                    socketio.emit('message',data);
+                    var template="<div class='sender'>"+msg+"</div>";
+                    $('.chat-box').prepend(template);
+                    $('#msg-input').val("");
+                }
+            });
+        }
+    );
+
+</script>
+{%endblock%}

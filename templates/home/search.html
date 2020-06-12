@@ -1,8 +1,7 @@
 {% extends 'app.html'%}
-
-
-
-
+{%set theme=current_user.theme%}
+{%set themeclass=Theme.get_theme(theme)%}
+{%set bg=themeclass+"-body"%}
 {%block main%}
 <div class="row justify-content-center">
     <div class="col-lg-6 p-3">

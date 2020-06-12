@@ -28,7 +28,7 @@ class User(db.Model,UserMixin):
         Dictonary=dict()
         Dictonary['Username']=self.Username
         Dictonary['Id']=self.Id
-        Dictonary['Pimg']=resized_img_src( self.Profile_img,width=100,height=100,mode='fit',quality=10000)
+        Dictonary['Pimg']=self.Profile_img
         Dictonary['Theme']=self.theme
         return Dictonary
     

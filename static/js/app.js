@@ -1,4 +1,25 @@
 
+var socketio=io();
+socketio.on('recvmsg', function (param) { 
+    room=param['id'];
+    var arr=location.pathname.split('/');
+    if(!arr.some(function(value){return value=='message'})){
+        alert('You have New Message From '+param['un']);
+    }
+    
+    else{
+        $.ajax({
+            type: "GET",
+            url: "/chats",
+            success: function (response) {
+                changeListOfMessages(response);
+            }
+        });
+        
+    }
+ });
+
+
 function preloader(){
     $('#preloader').fadeOut('slow');
 }
@@ -102,27 +123,24 @@ $(document).ready(
         $("#changetheme").on('shown.bs.modal',function(e){
        var Themes_to_render={
              
-            'Original':'nevablue',
-            'Spicy':'spicy-tb',
-            'Veggies':'veg-tb',
-            'Fruity':'fruits-tb',
-            'Chilled':'cold-tb',
-            'Candy':'candy-tb',
-            'Chocolate':'choco-tb',
-            'Bread and Butter':'bread-tb',
-            'Popsickle':'pop-tb',
-            'Sushi':'rice-tb'
+            'Original':'Original',
+            'Spicy':'Spicy',
+            'Veggies':'Veggies',
+            'Fruity':'Fruity ',
+            'Chilled':'Chilled',
+            'Candy':'Candy',
+            'Chocolate':'Chocolate',
+            'Bread and Butter':'Bread-and-Butter',
+            'Popsickle':'Popsickle',
+            'Sushi':'Sushi'
         };
         $("#loopForTheme").html("");
         for(Theme in Themes_to_render){
             theme=Themes_to_render[Theme];
-            
             template="<div class='card' > <div class='card-body hoverable {1}' id='themeShow' onclick='ChangeTheme(\"{2}\")'> <h4>{2}</h4></div> </div>".replace('{1}',theme);
             template=template.replace("{2}",Theme);
             template=template.replace("{2}",Theme);
             $("#loopForTheme").append(template);
-            
-            
         }
         })
         
@@ -177,23 +195,31 @@ $(document).ready(function () {
 
 function GetTheFkingTheme(theme){
     var Themes_to_render={
-             
-        'Original':'nevablue',
-        'Spicy':'spicy-rl',
-        'Veggies':'veg-rl',
-        'Fruity':'fruits-rl',
-        'Chilled':'cold-rl',
-        'Candy':'candy-rl',
-        'Chocolate':'choco-rl',
-        'Bread and Butter':'bread-rl',
-        'Popsickle':'pop-rl',
-        'Sushi':'rice-rl'
+        'Original':'Original',
+        'Spicy':'Spicy',
+        'Veggies':'Veggies',
+        'Fruity':'Fruity ',
+        'Chilled':'Chilled',
+        'Candy':'Candy',
+        'Chocolate':'Chocolate',
+        'Bread and Butter':'Bread-and-Butter',
+        'Popsickle':'Popsickle',
+        'Sushi':'Sushi'
     };
     return Themes_to_render[theme];
 }
 
 $(document).ready(
     function () { 
+        $("#searchInpt").keyup(function (e) {
+            if(e.which===13) {
+                console.log(13);
+                
+                $("#searchBtn").click();
+            }
+            
+        });
+
         $("#searchBtn").click(function(){
             var SearchValue=$("#searchInpt").val();
             if(SearchValue===''){
@@ -310,6 +336,15 @@ $(document).ready(
      }
 
 );
+var CUID;
+async function getCurrentUser(){
+    var response = await fetch("/get_current_user");
+    var data=await response.json();
+    CUID=data;
+    
+    
+}
+getCurrentUser();
 
 function Like(id){
     
@@ -339,19 +374,98 @@ function addComment(id){
             comment:comment
         },
         success:function (response) {
-            console.log("Working2");
+           
+           
             var no= parseInt( $('#no-comment-'+id).text());
-           if(response==='added'){
+           if(response!='-1'||response!='-2'||response!='-3'){
             $('#no-comment-'+id).text(no+1);
             $('#add-comment-'+id).val(" ")
             $('#comment-'+id).hide();
-            alert('Your Comment is Added');
+            
+            $("#comments").html("");
+            var key=1;
+            for(var k in response){
+                var comment=response[k]['comment'];
+                var time=response[k]['time'];
+                var user=response[k]['user'];
+                var userid=user['Id'];
+                var username=user['Username'];
+                var Pimg=user['Pimg'];
+
+               
+                if(CUID==userid){
+                    var template=`\
+                <div class="list-group-item">\
+                <div class="container">\
+                \
+                <div class="media">\
+                                <a href="/profile/{userid}">\
+                                    <img class="align-self-center mr-3 " src="{pimg}" style="border-radius: 50%;background-color:#4f4f4f;width:4rem;height:4rem">\
+                                    </a>\ 
+                                <div class="media-body">\
+                                  <h5 class="mt-0">{username} <span class="float-right btn" >\
+                                   <button class="btn" onclick="deleteComment('{postid}','{key}')"> <i class="fa fa-trash" aria-hidden="true"></i></button>  </a>\ 
+                                   <button class="btn" onclick="$('#updatecmnt-{key},.hide-on-update-{key}').fadeToggle()"> <i class="fa fa-pencil" aria-hidden="true"></i> </button>\
+                             </h5>\
+                             <div class="form-inline mb-0" id="updatecmnt-{key}" style="display: none;">\
+                                    <input type="text" name="comment" id="update-comment-{postid}" class="add-comment form-control form-control-lg mx-2" value="{comment}" style="width: 80%;height:2.3rem!important;background-color:#818181" placeholder="Add Comment">\
+                                    <span><button class="btn btn-dark" onclick="EditComment('{postid}','{key}')"> <i class="fa fa-paper-plane" aria-hidden="true"></i> </button></span>\
+                            </div>\
+                            <div class="hide-on-update-{key}">\
+                                  <p>{comment}</p>\
+                                  <p class="mb-0 text-muted" style='font-size:8px'>Time of comment: {time}</p>
+                               </div>   \
+                                </div>\
+                              </div>\
+                            </div>  \
+                </div>`;
+                }
+                else{
+                    var template=`\
+                <div class="list-group-item">\
+                <div class="container">\
+                \
+                <div class="media">\
+                                <a href="/profile/{userid}">\
+                                    <img class="align-self-center mr-3 " src="{pimg}" style="border-radius: 50%;background-color:#4f4f4f;width:4rem;height:4rem">\ 
+                                <div class="media-body">\
+                                  <h5 class="mt-0">{username} <a class="float-right btn" href="#" data-toggle="dropdown" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-ellipsis-v" aria-hidden="true" ></i>  </a>\ 
+                             </h5>\
+                                  <p>{comment}</p>\
+                                  <p class="mb-0 text-muted" style='font-size:8px'>Time of comment: {time}</p>\
+                                </div>\
+                              </div>\
+                            </div>  \
+                </div>`;
+                }
+                
+                
+                template=template.replace('{userid}',userid);
+                template=template.replace("{key}",key);
+                template=template.replace("{key}",key);
+                template=template.replace("{key}",key);
+                template=template.replace("{key}",key);
+                template=template.replace("{key}",key);
+                template=template.replace("{key}",key);
+                template=template.replace("{postid}",id);
+                template=template.replace("{postid}",id);
+                template=template.replace("{postid}",id);
+                template=template.replace("{postid}",id);
+                template=template.replace("{postid}",id);
+                template=template.replace('{pimg}',Pimg);
+                template=template.replace('{username}',username);
+                template=template.replace('{comment}',comment);
+                template=template.replace('{comment}',comment);
+                template=template.replace('{comment}',comment);
+                template=template.replace('{comment}',comment);
+                template=template.replace('{time}',time);
+                
+                $("#comments").append(template);
+                key+=1;
+            }
            }
            
-           else{
-               var noo=parseInt($('#noofDislikes-'+id).text())
-              
-           }
+           
             
         }
     });
@@ -385,7 +499,7 @@ function sendLikerqst(id){
 
 }
 function sendunlikerqst(id){
-    console.log(id);
+    
     $.ajax({
         type: "POST",
         url: "/post/unlike",
@@ -402,9 +516,253 @@ function sendunlikerqst(id){
              $('#noofDislikes-'+id).text(no-1);
             }
             else{
-                var noo=parseInt($('#nooflikes').text())
+                var noo=parseInt($('#nooflikes-'+id).text())
                 $('#noofDislikes-'+id).text(no+1);
                 $('#nooflikes-'+id).text(noo-1);
+            }
+            
+        }
+    });
+}
+
+function deleteComment(postid,key){
+    $.ajax({
+        type: "POST",
+        url: "/post/comment/delete",
+        data: {
+            id:parseInt( postid),
+            comid:parseInt( key)
+        },
+        
+        success: function (response) {
+            if(response!='error'){
+                var no= parseInt( $('#no-comment-'+postid).text());
+          
+            $('#no-comment-'+postid).text(no-1);
+            $('#add-comment-'+postid).val(" ")
+            $('#comment-'+postid).hide();
+                $("#comments").html("");
+            var key=1;
+            for(var k in response){
+                var comment=response[k]['comment'];
+                var time=response[k]['time'];
+                var user=response[k]['user'];
+                var userid=user['Id'];
+                var username=user['Username'];
+                var Pimg=user['Pimg'];
+
+               
+                if(CUID==userid){
+                    var template=`\
+                <div class="list-group-item">\
+                <div class="container">\
+                \
+                <div class="media">\
+                                <a href="/profile/{userid}">\
+                                    <img class="align-self-center mr-3 " src="{pimg}" style="border-radius: 50%;background-color:#4f4f4f;width:4rem;height:4rem">\
+                                    </a>\ 
+                                <div class="media-body">\
+                                  <h5 class="mt-0">{username} <span class="float-right btn" >\
+                                   <button class="btn" onclick="deleteComment('{postid}','{key}')"> <i class="fa fa-trash" aria-hidden="true"></i></button>  </a>\ 
+                                   <button class="btn" onclick="$('#updatecmnt-{key},.hide-on-update-{key}').fadeToggle()"> <i class="fa fa-pencil" aria-hidden="true"></i> </button>\
+                             </h5>\
+                             <div class="form-inline mb-0" id="updatecmnt-{key}" style="display: none;">\
+                                    <input type="text" name="comment" id="update-comment-{postid}" class="add-comment form-control form-control-lg mx-2" value="{comment}" style="width: 80%;height:2.3rem!important;background-color:#818181" placeholder="Add Comment">\
+                                    <span><button class="btn btn-dark" onclick="EditComment('{postid}','{key}')"> <i class="fa fa-paper-plane" aria-hidden="true"></i> </button></span>\
+                            </div>\
+                            <div class="hide-on-update-{key}">\
+                                  <p>{comment}</p>\
+                                  <p class="mb-0 text-muted" style='font-size:8px'>Time of comment: {time}</p>
+                               </div>   \
+                                </div>\
+                              </div>\
+                            </div>  \
+                </div>`;
+                }
+                else{
+                    var template=`\
+                <div class="list-group-item">\
+                <div class="container">\
+                \
+                <div class="media">\
+                                <a href="/profile/{userid}">\
+                                    <img class="align-self-center mr-3 " src="{pimg}" style="border-radius: 50%;background-color:#4f4f4f;width:4rem;height:4rem">\ 
+                                <div class="media-body">\
+                                  <h5 class="mt-0">{username} <a class="float-right btn" href="#" data-toggle="dropdown" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-ellipsis-v" aria-hidden="true" ></i>  </a>\ 
+                             </h5>\
+                                  <p>{comment}</p>\
+                                  <p class="mb-0 text-muted" style='font-size:8px'>Time of comment: {time}</p>\
+                                </div>\
+                              </div>\
+                            </div>  \
+                </div>`;
+                }
+                
+                
+                template=template.replace('{userid}',userid);
+                template=template.replace("{key}",key);
+                template=template.replace("{key}",key);
+                template=template.replace("{key}",key);
+                template=template.replace("{key}",key);
+                template=template.replace("{key}",key);
+                template=template.replace("{key}",key);
+                template=template.replace("{postid}",postid);
+                template=template.replace("{postid}",postid);
+                template=template.replace("{postid}",postid);
+                template=template.replace("{postid}",postid);
+                template=template.replace('{pimg}',Pimg);
+                template=template.replace('{username}',username);
+                template=template.replace('{comment}',comment);
+                template=template.replace('{comment}',comment);
+                template=template.replace('{comment}',comment);
+                template=template.replace('{comment}',comment);
+                template=template.replace('{time}',time);
+                
+                $("#comments").append(template);
+                key+=1;
+            }
+            }
+            
+        }
+    });
+}
+
+function DelPost(postId){
+    $.ajax({
+        type: "POST",
+        url: "/post/delete",
+        data: {
+            id:postId
+        },
+        
+        success: function (response) {
+            if(response!='error'){
+                location.reload();
+            }
+        }
+    });
+}
+function EditComment(posid,com){
+    var comment=$("#update-comment-"+posid).val().trim();
+    if(comment==''){
+        $("#update-comment-"+posid).addClass('is-invalid');
+        return ;
+    }
+    $.ajax({
+        type: "POST",
+        url: "comment/update",
+        data: {
+            id:posid,
+            comid:com,
+            comment:comment
+        },
+        success: function (response) {
+            if(response!='error'){
+                
+                $("#comments").html("");
+            var key=1;
+            for(var k in response){
+                var comment=response[k]['comment'];
+                var time=response[k]['time'];
+                var user=response[k]['user'];
+                var userid=user['Id'];
+                var username=user['Username'];
+                var Pimg=user['Pimg'];
+
+               
+                if(CUID==userid){
+                    var template=`\
+                <div class="list-group-item">\
+                <div class="container">\
+                \
+                <div class="media">\
+                                <a href="/profile/{userid}">\
+                                    <img class="align-self-center mr-3 " src="{pimg}" style="border-radius: 50%;background-color:#4f4f4f;width:4rem;height:4rem">\
+                                    </a>\ 
+                                <div class="media-body">\
+                                  <h5 class="mt-0">{username} <span class="float-right btn" >\
+                                   <button class="btn" onclick="deleteComment('{postid}','{key}')"> <i class="fa fa-trash" aria-hidden="true"></i></button>  </a>\ 
+                                   <button class="btn" onclick="$('#updatecmnt-{key},.hide-on-update-{key}').fadeToggle()"> <i class="fa fa-pencil" aria-hidden="true"></i> </button>\
+                             </h5>\
+                             <div class="form-inline mb-0" id="updatecmnt-{key}" style="display: none;">\
+                                    <input type="text" name="comment" id="update-comment-{postid}" class="add-comment form-control form-control-lg mx-2" value="{comment}" style="width: 80%;height:2.3rem!important;background-color:#818181" placeholder="Add Comment">\
+                                    <span><button class="btn btn-dark" onclick="EditComment('{postid}','{key}')"> <i class="fa fa-paper-plane" aria-hidden="true"></i> </button></span>\
+                            </div>\
+                            <div class="hide-on-update-{key}">\
+                                  <p>{comment}</p>\
+                                  <p class="mb-0 text-muted" style='font-size:8px'>Time of comment: {time}</p>
+                               </div>   \
+                                </div>\
+                              </div>\
+                            </div>  \
+                </div>`;
+                }
+                else{
+                    var template=`\
+                <div class="list-group-item">\
+                <div class="container">\
+                \
+                <div class="media">\
+                                <a href="/profile/{userid}">\
+                                    <img class="align-self-center mr-3 " src="{pimg}" style="border-radius: 50%;background-color:#4f4f4f;width:4rem;height:4rem">\ 
+                                <div class="media-body">\
+                                  <h5 class="mt-0">{username} <a class="float-right btn" href="#" data-toggle="dropdown" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fa fa-ellipsis-v" aria-hidden="true" ></i>  </a>\ 
+                             </h5>\
+                                  <p>{comment}</p>\
+                                  <p class="mb-0 text-muted" style='font-size:8px'>Time of comment: {time}</p>\
+                                </div>\
+                              </div>\
+                            </div>  \
+                </div>`;
+                }
+                
+                
+                template=template.replace('{userid}',userid);
+                template=template.replace("{key}",key);
+                template=template.replace("{key}",key);
+                template=template.replace("{key}",key);
+                template=template.replace("{key}",key);
+                template=template.replace("{key}",key);
+                template=template.replace("{key}",key);
+                template=template.replace("{postid}",posid);
+                template=template.replace("{postid}",posid);
+                template=template.replace("{postid}",posid);
+                template=template.replace("{postid}",posid);
+                template=template.replace("{postid}",posid);
+                template=template.replace('{pimg}',Pimg);
+                template=template.replace('{username}',username);
+                template=template.replace('{comment}',comment);
+                template=template.replace('{comment}',comment);
+                template=template.replace('{comment}',comment);
+                template=template.replace('{comment}',comment);
+                template=template.replace('{time}',time);
+                
+                $("#comments").append(template);
+                key+=1;
+            }
+            }
+            
+        }
+    });
+}
+function pin(postid){
+
+    $.ajax({
+        type: "POST",
+        url: "/pinned/add",
+        data: {
+            id:postid
+        },
+        success: function (response) {
+            if(response=='added'){
+                alert('This Post is added to your Pin Board.');
+            }
+            else if(response=='remove'){
+                alert('This Post is removed from your Pin Board.');
+            }
+            else{
+                console.log("error");
+                
             }
             
         }

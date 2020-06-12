@@ -1,0 +1,139 @@
+.Original {
+  background-color: #21e6c1;
+  color: #071e3d;
+}
+
+.Original .card-body {
+  background-color: #1f4287;
+}
+
+.Original-body {
+  background-color: #278ea5;
+}
+
+.Spicy {
+  background-color: #85203b;
+  color: #fff98c;
+}
+
+.Spicy .card-body {
+  background-color: #cb3b3b;
+}
+
+.Spicy-body {
+  background-color: #fff98c;
+}
+
+.Veggies {
+  background-color: #086972;
+  color: #071a52;
+}
+
+.Veggies .card-body {
+  background-color: #17b978;
+}
+
+.Veggies-body {
+  background-color: #a7ff83;
+}
+
+.Chilled {
+  background-color: #22d1ee;
+  color: #1a1a1a;
+}
+
+.Chilled .card-body {
+  background-color: #3d5af1;
+}
+
+.Chilled-body {
+  background-color: #e2f3f5;
+}
+
+.Candy {
+  background-color: #2d767f;
+  color: #c3c3c3;
+}
+
+.Candy .card-body {
+  background-color: #2d767f;
+}
+
+.Candy-body {
+  background-color: #b4f1f1;
+}
+
+.Chocolate {
+  background-color: #ed9f66;
+  color: #876464;
+}
+
+.Chocolate .card-body {
+  background-color: #da5151;
+}
+
+.Chocolate-body {
+  background-color: #f7ec77;
+}
+
+.Bread-and-Butter {
+  background-color: #df8931;
+  color: #aa530e;
+}
+
+.Bread-and-Butter .card-body {
+  background-color: #f5c16c;
+}
+
+.Bread-and-Butter-body {
+  background-color: #f3eded;
+}
+
+.Popsickle {
+  background-color: #b55c6c;
+  color: #61305d;
+}
+
+.Popsickle .card-body {
+  background-color: #e77c7c;
+}
+
+.Popsickle-body {
+  background-color: #f7b679;
+}
+
+.Sushi {
+  background-color: #b55c6c;
+  color: #61305d;
+}
+
+.Sushi .card-body {
+  background-color: #e77c7c;
+}
+
+.Sushi {
+  background-color: #f0d9da;
+  color: #8b8b8b;
+}
+
+.Sushi .card-body {
+  background-color: #f0d9da;
+}
+
+.Sushi-body {
+  background-color: #ecf2f9;
+}
+
+.Fruity {
+  background-color: #c03546;
+  color: #492540;
+}
+
+.Fruity .card-body {
+  background-color: #f26d5b;
+}
+
+.Fruity-body {
+  background-color: #f6ea8c;
+}
+/*# sourceMappingURL=color.css.map */

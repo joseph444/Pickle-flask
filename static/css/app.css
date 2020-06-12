@@ -154,7 +154,7 @@
     max-width: 100%!important;
     max-height: 100%!important;
     
-    object-fit: cover!important;
+    object-fit: contain!important;
     
 }
 .username-side{
@@ -260,10 +260,73 @@
     
     border-radius: 15px;
 }
+.scrollable{
+   
+   
+    max-height:25rem!important;
+    overflow-y: scroll;
+}
 
 
 
-
+.chat-box {
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
+    grid-auto-rows: -webkit-min-content;
+    grid-auto-rows: min-content;
+    grid-gap: 1rem;
+    max-height: 50vh;
+    overflow-y: scroll;
+    min-height: 80vh;
+    grid-auto-flow: row;
+  }
+  
+  .chat-box .sender {
+    border: 1px black solid;
+    border-radius: 3rem;
+    background-color: chartreuse;
+    font-size: large;
+    -ms-grid-column: 2;
+        grid-column-start: 2;
+    grid-column-end: 4;
+    text-align: right;
+    padding: 1rem;
+  }
+  
+  .chat-box .reciever {
+    border: 1px black solid;
+    border-radius: 3rem;
+    -ms-grid-column: 1;
+        grid-column-start: 1;
+    grid-column-end: 3;
+    background-color: skyblue;
+    font-size: large;
+    text-align: left;
+    padding: 1rem;
+  }
+  
+  .chat-box .tmp {
+    -ms-grid-column: 1;
+        grid-column-start: 1;
+    grid-column-end: 4;
+  }
+  .message-box {
+    display: -ms-grid;
+    display: grid;
+    top: 100vh;
+    -ms-grid-columns: 2fr 1fr;
+        grid-template-columns: 2fr 1fr;
+  }
+  
+  .message-box .impt {
+   
+  }
+  
+  .message-box .snd {
+    
+  }
 @media screen and (max-width:1090px) {
     .desktop {
       display: none!important;
